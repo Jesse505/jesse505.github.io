@@ -8,20 +8,20 @@
   <link rel="dns-prefetch" href="https://jesse505.github.io">
   <title>okhttp源码初探 - 基本流程 | Jesse&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1、整体思路首先放一张完整流程图（看不懂没关系，慢慢往后看）：  2、流程分析基本用法来自 OkHttp 官方网站 12345678910OkHttpClient client = new OkHttpClient();String run(String url) throws IOException &amp;#123;  Request request = new Request.Builder()">
+  <meta name="description" content="1、整体思路首先放一张完整流程图（看不懂没关系，慢慢往后看）：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="okhttp源码初探 - 基本流程">
 <meta property="og:url" content="https://jesse505.github.io/2017/12/08/2017-12-08-Understand-OkHttp/index.html">
 <meta property="og:site_name" content="Jesse&#39;s blog">
-<meta property="og:description" content="1、整体思路首先放一张完整流程图（看不懂没关系，慢慢往后看）：  2、流程分析基本用法来自 OkHttp 官方网站 12345678910OkHttpClient client = new OkHttpClient();String run(String url) throws IOException &amp;#123;  Request request = new Request.Builder()">
+<meta property="og:description" content="1、整体思路首先放一张完整流程图（看不懂没关系，慢慢往后看）：">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://jesse505.github.io/img/201712/okhttp_full_process.png">
 <meta property="og:image" content="https://jesse505.github.io/img/201712/okhttp_interceptors.png">
 <meta property="og:image" content="https://jesse505.github.io/img/201712/okhttp_full_process.png">
-<meta property="og:updated_time" content="2018-12-26T15:01:50.000Z">
+<meta property="og:updated_time" content="2018-12-26T15:14:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="okhttp源码初探 - 基本流程">
-<meta name="twitter:description" content="1、整体思路首先放一张完整流程图（看不懂没关系，慢慢往后看）：  2、流程分析基本用法来自 OkHttp 官方网站 12345678910OkHttpClient client = new OkHttpClient();String run(String url) throws IOException &amp;#123;  Request request = new Request.Builder()">
+<meta name="twitter:description" content="1、整体思路首先放一张完整流程图（看不懂没关系，慢慢往后看）：">
 <meta name="twitter:image" content="https://jesse505.github.io/img/201712/okhttp_full_process.png">
   
     <link rel="alternative" href="/atom.xml" title="Jesse&#39;s blog" type="application/atom+xml">
@@ -176,6 +176,7 @@
       
         <h2 id="1、整体思路"><a href="#1、整体思路" class="headerlink" title="1、整体思路"></a>1、整体思路</h2><p>首先放一张完整流程图（看不懂没关系，慢慢往后看）：</p>
 <p><img src="/img/201712/okhttp_full_process.png" alt="okhttp_full_process" style="width: 600px;"></p>
+<a id="more"></a>
 <h2 id="2、流程分析"><a href="#2、流程分析" class="headerlink" title="2、流程分析"></a>2、流程分析</h2><p>基本用法来自 <a href="http://square.github.io/okhttp/#examples" target="_blank" rel="noopener">OkHttp 官方网站</a></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">OkHttpClient client = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line"></span><br><span class="line"><span class="function">String <span class="title">run</span><span class="params">(String url)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">      .url(url)</span><br><span class="line">      .build();</span><br><span class="line"></span><br><span class="line">  Response response = client.newCall(request).execute();</span><br><span class="line">  <span class="keyword">return</span> response.body().string();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="2-1-创建OkHttpClient对象"><a href="#2-1-创建OkHttpClient对象" class="headerlink" title="2.1 创建OkHttpClient对象"></a>2.1 创建OkHttpClient对象</h3><p>首先是创建OkHttpClient对象，支持两种构造方式    </p>
