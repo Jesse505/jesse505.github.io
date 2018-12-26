@@ -11,6 +11,8 @@ date: 2017-12-08 20:17:15
 
 <img src="/img/201712/okhttp_full_process.png" alt="okhttp_full_process" style="width: 600px;">
 
+<!--more-->
+
 ## 2、流程分析
 基本用法来自 [OkHttp 官方网站](http://square.github.io/okhttp/#examples)
 
