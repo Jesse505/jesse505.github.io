@@ -6,18 +6,31 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://jesse505.github.io">
-  <title>Archives: 2017/1 | Jesse&#39;s blog</title>
+  <title>图解排序算法（三）之堆排序 | Jesse&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="少壮不努力，老大撸代码">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Jesse&#39;s blog">
-<meta property="og:url" content="https://jesse505.github.io/archives/2017/01/index.html">
+  <meta name="description" content="预备知识堆排序堆排序是利用堆这种数据结构而设计的一种排序算法，堆排序是对直接选择排序的改进，它的最坏，最好，平均时间复杂度均为O(nlogn)，它也是不稳定排序，不适合待排序序列较少的情况。首先简单了解下堆结构。 堆堆是具有以下性质的完全二叉树：每个结点的值都大于或等于其左右孩子结点的值，称为大顶堆；或者每个结点的值都小于或等于其左右孩子结点的值，称为小顶堆。如下图：">
+<meta name="keywords" content="算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图解排序算法（三）之堆排序">
+<meta property="og:url" content="https://jesse505.github.io/2017/01/07/2017-01-07-arith-sort-part3/index.html">
 <meta property="og:site_name" content="Jesse&#39;s blog">
-<meta property="og:description" content="少壮不努力，老大撸代码">
+<meta property="og:description" content="预备知识堆排序堆排序是利用堆这种数据结构而设计的一种排序算法，堆排序是对直接选择排序的改进，它的最坏，最好，平均时间复杂度均为O(nlogn)，它也是不稳定排序，不适合待排序序列较少的情况。首先简单了解下堆结构。 堆堆是具有以下性质的完全二叉树：每个结点的值都大于或等于其左右孩子结点的值，称为大顶堆；或者每个结点的值都小于或等于其左右孩子结点的值，称为小顶堆。如下图：">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://jesse505.github.io/img/201701/heapSort1.png">
+<meta property="og:image" content="https://jesse505.github.io/img/201701/heapSort2.png">
+<meta property="og:image" content="https://jesse505.github.io/img/201701/heapSort3.png">
+<meta property="og:image" content="https://jesse505.github.io/img/201701/heapSort4.png">
+<meta property="og:image" content="https://jesse505.github.io/img/201701/heapSort5.png">
+<meta property="og:image" content="https://jesse505.github.io/img/201701/heapSort6.png">
+<meta property="og:image" content="https://jesse505.github.io/img/201701/heapSort7.png">
+<meta property="og:image" content="https://jesse505.github.io/img/201701/heapSort8.png">
+<meta property="og:image" content="https://jesse505.github.io/img/201701/heapSort9.png">
+<meta property="og:image" content="https://jesse505.github.io/img/201701/heapSort10.png">
+<meta property="og:updated_time" content="2019-01-13T09:15:10.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Jesse&#39;s blog">
-<meta name="twitter:description" content="少壮不努力，老大撸代码">
+<meta name="twitter:title" content="图解排序算法（三）之堆排序">
+<meta name="twitter:description" content="预备知识堆排序堆排序是利用堆这种数据结构而设计的一种排序算法，堆排序是对直接选择排序的改进，它的最坏，最好，平均时间复杂度均为O(nlogn)，它也是不稳定排序，不适合待排序序列较少的情况。首先简单了解下堆结构。 堆堆是具有以下性质的完全二叉树：每个结点的值都大于或等于其左右孩子结点的值，称为大顶堆；或者每个结点的值都小于或等于其左右孩子结点的值，称为小顶堆。如下图：">
+<meta name="twitter:image" content="https://jesse505.github.io/img/201701/heapSort1.png">
   
     <link rel="alternative" href="/atom.xml" title="Jesse&#39;s blog" type="application/atom+xml">
   
@@ -149,36 +162,92 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-2017-01-07-arith-sort-part3" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      图解排序算法（三）之堆排序
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/01/07/2017-01-07-arith-sort-part3/" class="archive-article-date">
+
+        
+        <a href="/2017/01/07/2017-01-07-arith-sort-part3/" class="archive-article-date">
   	<time datetime="2017-01-07T14:30:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-01-07</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/07/2017-01-07-arith-sort-part3/">图解排序算法（三）之堆排序</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h3><h5 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h5><p>堆排序是利用堆这种数据结构而设计的一种排序算法，堆排序是对直接选择排序的改进，<strong>它的最坏，最好，平均时间复杂度均为O(nlogn)，它也是不稳定排序，不适合待排序序列较少的情况</strong>。首先简单了解下堆结构。</p>
+<h5 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h5><p><strong>堆是具有以下性质的完全二叉树：每个结点的值都大于或等于其左右孩子结点的值，称为大顶堆；或者每个结点的值都小于或等于其左右孩子结点的值，称为小顶堆。如下图：</strong></p>
+<p><img src="/img/201701/heapSort1.png" alt="heap sort png"></p>
+<a id="more"></a>
+<p>同时，我们对堆中的结点按层进行编号，将这种逻辑结构映射到数组中就是下面这个样子</p>
+<p><img src="/img/201701/heapSort2.png" alt="heap sort png" style="width: 600px;"></p>
+<p>该数组从逻辑上讲就是一个堆结构，我们用简单的公式来描述一下堆的定义就是：<br><strong>大顶堆：arr[i] &gt;= arr[2i+1] &amp;&amp; arr[i] &gt;= arr[2i+2]</strong><br><strong>小顶堆：arr[i] &lt;= arr[2i+1] &amp;&amp; arr[i] &lt;= arr[2i+2]</strong><br>ok，了解了这些定义。接下来，我们来看看堆排序的基本思想及基本步骤：</p>
+<h3 id="基本思想及基本步骤"><a href="#基本思想及基本步骤" class="headerlink" title="基本思想及基本步骤"></a>基本思想及基本步骤</h3><blockquote>
+<p>堆排序的基本思想是：将待排序序列构造成一个大顶堆，此时，整个序列的最大值就是堆顶的根节点。将其与末尾元素进行交换，此时末尾就为最大值。然后将剩余n-1个元素重新构造成一个堆，这样会得到n个元素的次小值。如此反复执行，便能得到一个有序序列了</p>
+</blockquote>
+<p><strong>步骤一 构造初始堆。将给定无序序列构造成一个大顶堆（一般升序采用大顶堆，降序采用小顶堆)。</strong>  </p>
+<p>1.假设给定无序序列结构如下<br><img src="/img/201701/heapSort3.png" alt="heap sort png" style="width: 300px;"></p>
+<p>2.此时我们从最后一个非叶子结点开始（叶结点自然不用调整，第一个非叶子结点 arr.length/2-1=5/2-1=1，也就是下面的6结点），从左至右，从下至上进行调整。<br><img src="/img/201701/heapSort4.png" alt="heap sort png" style="width: 600px;"></p>
+<p>3.找到第二个非叶节点4，由于[4,9,8]中9元素最大，4和9交换。<br><img src="/img/201701/heapSort5.png" alt="heap sort png" style="width: 600px;">  </p>
+<p>这时，交换导致了子根[4,5,6]结构混乱，继续调整，[4,5,6]中6最大，交换4和6。<br><img src="/img/201701/heapSort6.png" alt="heap sort png" style="width: 600px;">  </p>
+<p>此时，我们就将一个无需序列构造成了一个大顶堆。</p>
+<p><strong>步骤二 将堆顶元素与末尾元素进行交换，使末尾元素最大。然后继续调整堆，再将堆顶元素与末尾元素交换，得到第二大元素。如此反复进行交换、重建、交换。</strong></p>
+<p>1.将堆顶元素9和末尾元素4进行交换<br><img src="/img/201701/heapSort7.png" alt="heap sort png" style="width: 600px;"> </p>
+<p>2.重新调整结构，使其继续满足堆定义<br><img src="/img/201701/heapSort8.png" alt="heap sort png" style="width: 600px;"> </p>
+<p>3.再将堆顶元素8与末尾元素5进行交换，得到第二大元素8.<br><img src="/img/201701/heapSort9.png" alt="heap sort png" style="width: 600px;"> </p>
+<p>后续过程，继续进行调整，交换，如此反复进行，最终使得整个序列有序</p>
+<p><img src="/img/201701/heapSort10.png" alt="heap sort png" style="width: 300px;"> </p>
+<p>再简单总结下堆排序的基本思路：</p>
+<p>&emsp; &emsp; <strong>1. 将无需序列构建成一个堆，根据升序降序需求选择大顶堆或小顶堆;</strong></p>
+<p>&emsp; &emsp; <strong>2. 将堆顶元素与末尾元素交换，将最大元素”沉”到数组末端;</strong></p>
+<p>&emsp; &emsp; <strong>3. 重新调整结构，使其满足堆定义，然后继续交换堆顶元素与当前末尾元素，反复执行调整+交换步骤，直到整个序列有序。</strong></p>
+<h3 id="Java实现"><a href="#Java实现" class="headerlink" title="Java实现"></a>Java实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//堆排序（强化版的选择排序）</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">heapSort</span><span class="params">(<span class="keyword">int</span>[] data)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; data.length - <span class="number">1</span>; i++) &#123;</span><br><span class="line">        buildMaxHeap(data, data.length - <span class="number">1</span> - i);</span><br><span class="line">        swap(data, <span class="number">0</span>, data.length - <span class="number">1</span> - i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//构建大顶堆</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">buildMaxHeap</span><span class="params">(<span class="keyword">int</span>[] data, <span class="keyword">int</span> lastIndex)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//从尾节点的父节点开始</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = (lastIndex - <span class="number">1</span>)/<span class="number">2</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="keyword">int</span> k = i;</span><br><span class="line">        <span class="comment">//说明有叶子节点</span></span><br><span class="line">        <span class="keyword">while</span> (k*<span class="number">2</span> + <span class="number">1</span> &lt;= lastIndex) &#123;</span><br><span class="line">            <span class="keyword">int</span> biggestIndex = k*<span class="number">2</span> +<span class="number">1</span>;</span><br><span class="line">            <span class="comment">//说明有右节点</span></span><br><span class="line">            <span class="keyword">if</span> (biggestIndex &lt; lastIndex) &#123;</span><br><span class="line">                <span class="comment">//如果左节点小于右节点，则biggestIndex+1</span></span><br><span class="line">                <span class="keyword">if</span> (data[biggestIndex] &lt; data[biggestIndex+<span class="number">1</span>]) &#123;</span><br><span class="line">                    biggestIndex++;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (data[k] &lt; data[biggestIndex]) &#123;</span><br><span class="line">                <span class="comment">//交换他们</span></span><br><span class="line">                swap(data, k, biggestIndex);</span><br><span class="line">                <span class="comment">// 将biggerIndex赋予k，开始while循环的下一次循环，重新保证k节点的值大于其左右子节点的值</span></span><br><span class="line">                k = biggestIndex;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span>[] data, <span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp = data[i];</span><br><span class="line">    data[i] = data[j];</span><br><span class="line">    data[j] = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我喝咖啡<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/alipay.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/wechatPay.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -190,95 +259,128 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2017/01/07/2017-01-07-arith-sort-part3/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/01/06/2017-01-06-arith-sort-part2/" class="archive-article-date">
-  	<time datetime="2017-01-06T14:30:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-01-06</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2017/12/08/2017-12-08-Understand-OkHttp/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          okhttp源码初探 - 基本流程
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/01/06/2017-01-06-arith-sort-part2/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">图解排序算法（二）之希尔排序</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/06/2017-01-06-arith-sort-part2/">图解排序算法（二）之希尔排序</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#预备知识"><span class="toc-number">1.</span> <span class="toc-text">预备知识</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#堆排序"><span class="toc-number">1.0.1.</span> <span class="toc-text">堆排序</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#堆"><span class="toc-number">1.0.2.</span> <span class="toc-text">堆</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基本思想及基本步骤"><span class="toc-number">2.</span> <span class="toc-text">基本思想及基本步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Java实现"><span class="toc-number">3.</span> <span class="toc-text">Java实现</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/01/05/2017-01-05-arith-sort-part1/" class="archive-article-date">
-  	<time datetime="2017-01-05T15:01:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-01-05</time>
-</a>
-        </div>
-    	 
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/05/2017-01-05-arith-sort-part1/">图解排序算法（一）之冒泡，选择，直接插入排序</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -301,8 +403,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
