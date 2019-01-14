@@ -1,4 +1,4 @@
-﻿# Hexo Configuration
+# Hexo Configuration
 ## Docs: https://hexo.io/docs/configuration.html
 ## Source: https://github.com/hexojs/hexo/
 
@@ -99,3 +99,6 @@ jsonContent:
     excerpt: false
     categories: false
     tags: true
+
+sitemap:
+	path: sitemap.xml
