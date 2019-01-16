@@ -100,5 +100,8 @@ jsonContent:
     categories: false
     tags: true
 
-sitemap:
-	path: sitemap.xml
+# 自动生成sitemap
+sitemap: 
+  path: sitemap.xml
+baidusitemap: 
+  path: baidusitemap.xml
