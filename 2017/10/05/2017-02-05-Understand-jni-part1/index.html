@@ -8,18 +8,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://jesse505.github.io">
-  <title>Tag: 开源框架 | Jesse&#39;s blog</title>
+  <title>Android与JNI（一）实现动态注册 | Jesse&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="少壮不努力，老大撸代码">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Jesse&#39;s blog">
-<meta property="og:url" content="https://jesse505.github.io/tags/开源框架/index.html">
+  <meta name="description" content="问题背景Android Studio对JNI的开发是越来越友好了，给Google老大哥大大的赞，AS升级到2.2以后就能通过CMake编译，十分方便，具体可参考官方网站https://developer.android.com/studio/projects/add-native-code，至于JNI编译的其他方式，比如ndk-build，可参考这个哥们的文章。好了说了这么多，并没有讲到今天文章的">
+<meta name="keywords" content="JNI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android与JNI（一）实现动态注册">
+<meta property="og:url" content="https://jesse505.github.io/2017/10/05/2017-02-05-Understand-jni-part1/index.html">
 <meta property="og:site_name" content="Jesse&#39;s blog">
-<meta property="og:description" content="少壮不努力，老大撸代码">
+<meta property="og:description" content="问题背景Android Studio对JNI的开发是越来越友好了，给Google老大哥大大的赞，AS升级到2.2以后就能通过CMake编译，十分方便，具体可参考官方网站https://developer.android.com/studio/projects/add-native-code，至于JNI编译的其他方式，比如ndk-build，可参考这个哥们的文章。好了说了这么多，并没有讲到今天文章的">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-01-16T09:42:52.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Jesse&#39;s blog">
-<meta name="twitter:description" content="少壮不努力，老大撸代码">
+<meta name="twitter:title" content="Android与JNI（一）实现动态注册">
+<meta name="twitter:description" content="问题背景Android Studio对JNI的开发是越来越友好了，给Google老大哥大大的赞，AS升级到2.2以后就能通过CMake编译，十分方便，具体可参考官方网站https://developer.android.com/studio/projects/add-native-code，至于JNI编译的其他方式，比如ndk-build，可参考这个哥们的文章。好了说了这么多，并没有讲到今天文章的">
   
     <link rel="alternative" href="/atom.xml" title="Jesse&#39;s blog" type="application/atom+xml">
   
@@ -151,60 +153,211 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-2017-02-05-Understand-jni-part1" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/12/08/2017-12-08-Understand-OkHttp/" class="archive-article-date">
-  	<time datetime="2017-12-08T12:17:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-08</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/12/08/2017-12-08-Understand-OkHttp/">okhttp源码初探 - 基本流程</a>
+    <h1 class="article-title" itemprop="name">
+      Android与JNI（一）实现动态注册
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2017/10/05/2017-02-05-Understand-jni-part1/" class="archive-article-date">
+  	<time datetime="2017-10-05T14:21:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-10-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h3><p>Android Studio对JNI的开发是越来越友好了，给Google老大哥大大的赞，AS升级到2.2以后就能通过CMake编译，十分方便，具体可参考官方网站<a href="https://developer.android.com/studio/projects/add-native-code" target="_blank" rel="noopener">https://developer.android.com/studio/projects/add-native-code</a>，至于JNI编译的其他方式，比如ndk-build，可参考这个<a href="https://blog.csdn.net/mabeijianxi/article/details/68525164" target="_blank" rel="noopener">哥们的文章</a>。好了说了这么多，并没有讲到今天文章的重点，哈哈，我们现在开始啦。<br>静态注册, 每个 class 都需要使用 javah 生成一个头文件，并且生成的名字很长书写不便；初次调用时需要依据名字搜索对应的JNI层函数来建立关联关系，会影响运行效率。所以这时候动态注册就登场了。</p>
+<h3 id="动态注册"><a href="#动态注册" class="headerlink" title="动态注册"></a>动态注册</h3><h4 id="一-入口函数"><a href="#一-入口函数" class="headerlink" title="一.入口函数"></a>一.入口函数</h4><p>System.loadLibrary加载完 JNI 动态库之后，调用JNI_OnLoad函数，开始动态注册。这里就是登记注册的地方。注意：一个.so只能存在一个onload方法。</p>
+<h4 id="二-登记本地方法"><a href="#二-登记本地方法" class="headerlink" title="二.登记本地方法"></a>二.登记本地方法</h4><p>登记本地方法，作用是将 c/c++ 的函数映射到 JAVA 中，而在这里面起到关键作用的是结构体 JNINativeMethod 。他再jni.h文件中</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span> </span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* name; <span class="comment">//Java中函数的名字</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* signature; <span class="comment">//描述了函数的参数和返回值</span></span><br><span class="line">    <span class="keyword">void</span>* fnPtr; <span class="comment">//函数指针，指向我们调用别人家c++的封装 JNI 函数方法</span></span><br><span class="line">&#125; JNINativeMethod;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>根据这个结构体，我们可以声明一个实例</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> JNINativeMethod gMethods[] = &#123;</span><br><span class="line">        &#123; <span class="string">"stringFromJNI"</span>, <span class="string">"()Ljava/lang/String;"</span>, (<span class="keyword">void</span> *) stringFromJNI &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>参数分析：<br>“stringFromJNI”：Java 中声明的本地方法名；<br>(void *)stringFromJNI：映射对象，本地 c/c++ 函数，名字可以与 Java 中声明的本地方法名不一致。<br>“()Ljava/lang/String;”：这个应该是最难理解的，也就是结构体中的 signature 。他描述了本地方法的参数和返回值。例如<br>　　“()V”<br>　　“(II)V”<br>　　“(Ljava/lang/String;Ljava/lang/String;)V”<br>　　实际上这些字符是与函数的参数类型一一对应的。<br>　　“()” 中的字符表示参数，后面的则代表返回值。例如”()V” 就表示void Func();<br>　　“(II)V” 表示 void Func(int, int);<br>　　具体的每一个字符的对应关系如下<br>　　字符   Java类型     C类型<br>　　V      void         void<br>　　Z      jboolean     boolean<br>　　I       jint         int<br>　　J       jlong        long<br>　　D      jdouble       double<br>　　F      jfloat            float<br>　　B      jbyte            byte<br>　　C      jchar           char<br>　　S      jshort          short<br>　　数组则以”[“开始，用两个字符表示<br>　　[I     jintArray       int[]<br>　　[F     jfloatArray     float[]<br>　　[B     jbyteArray     byte[]<br>　　[C    jcharArray      char[]<br>　　[S    jshortArray      short[]<br>　　[D    jdoubleArray    double[]<br>　　[J     jlongArray      long[]<br>　　[Z    jbooleanArray    boolean[]<br>　　上面的都是基本类型，如果参数是 Java 类，则以”L”开头，以”;”结尾，中间是用”/“隔开包及类名，而其对应的 C 函数的参数则为 jobject，一个例外是 String 类，它对应的 c 类型为 jstring 。<br>　　Ljava/lang/String;     String     jstring<br>　　Ljava/net/Socket;      Socket    jobject<br>　　如果 JAVA 函数位于一个嵌入类（也被称为内部类），则用$作为类名间的分隔符，例如：”Landroid/os /FileUtils$FileStatus;”。</p>
+<p>　　最终是通过登记所有记录在 JNINativeMethod 结构体中的 JNI 本地方法，登记方法如下：  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 向JNI环境注册一个本地方法</span></span><br><span class="line"><span class="comment"> * @param clazz  包含本地方法的Java类</span></span><br><span class="line"><span class="comment"> * @param methods 本地方法描述数组</span></span><br><span class="line"><span class="comment"> * @param nMethods 本地方法个数</span></span><br><span class="line"><span class="comment"> * @return 成功返回0，否则注册失败</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">jint <span class="title">RegisterNatives</span><span class="params">(jclass clazz, <span class="keyword">const</span> JNINativeMethod *methods, jint nMethods)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>&emsp;&emsp;使用 registerNativeMethods 方法不仅仅是为了改变那丑陋的长方法名，最重要的是可以提高效率，因为当 Java 类透过 VM 呼叫到本地函数时，通常是依靠 VM 去动态寻找动态库中的本地函数(因此它们才需要特定规则的命名格式)，如果某方法需要连续呼叫很多次，则每次都要寻找一遍，所以使用 RegisterNatives 将本地函数向 VM 进行登记，可以让其更有效率的找到函数。<br>&emsp;&emsp;registerNativeMethods 方法的另一个重要用途是，运行时动态调整本地函数与 Java 函数值之间的映射关系，只需要多次调用 registerNativeMethods 方法，并传入不同的映射表参数即可。      </p>
+<h4 id="三-调用JNI-OnUnload结束"><a href="#三-调用JNI-OnUnload结束" class="headerlink" title="三.调用JNI_OnUnload结束"></a>三.调用JNI_OnUnload结束</h4><p>在这里可以进行一些收尾工作，比如对象的回收啊。</p>
+<h4 id="四-代码实现"><a href="#四-代码实现" class="headerlink" title="四.代码实现"></a>四.代码实现</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;android/log.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TAG <span class="meta-string">"zhaoyifei"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> NELEM(x) ((int) (sizeof(x) / sizeof((x)[0])))</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function">JNIEXPORT jstring JNICALL <span class="title">helloFromJNI</span><span class="params">(JNIEnv* env, jclass clazz)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    LOGI(<span class="string">"动态加载完成啦"</span>);</span><br><span class="line">    <span class="keyword">return</span> env-&gt;NewStringUTF(<span class="string">"hello world returned."</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> JNINativeMethod gMethods[] = &#123;</span><br><span class="line">        &#123; <span class="string">"helloFromJNI"</span>, <span class="string">"()Ljava/lang/String;"</span>, (<span class="keyword">void</span> *)helloFromJNI &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">registerNatives</span><span class="params">(JNIEnv* env)</span> </span>&#123;</span><br><span class="line">    LOGI(<span class="string">"registerNatives begin"</span>);</span><br><span class="line">    jclass  clazz;</span><br><span class="line">    clazz = env -&gt; FindClass(<span class="string">"com/example/github/jnidemo/MainActivity"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (clazz == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        LOGI(<span class="string">"clazz is null"</span>);</span><br><span class="line">        <span class="keyword">return</span> JNI_FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (env -&gt;RegisterNatives(clazz, gMethods, NELEM(gMethods)) != JNI_OK) &#123;</span><br><span class="line">        LOGI(<span class="string">"RegisterNatives error"</span>);</span><br><span class="line">        <span class="keyword">return</span> JNI_FALSE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> JNI_TRUE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">JNIEXPORT jint <span class="title">JNI_OnLoad</span><span class="params">(JavaVM* vm, <span class="keyword">void</span>* reserved)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    LOGI(<span class="string">"jni_OnLoad begin"</span>);</span><br><span class="line"></span><br><span class="line">    JNIEnv *env = <span class="literal">NULL</span>;</span><br><span class="line">    jint result = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (vm-&gt;GetEnv((<span class="keyword">void</span> **) &amp;env, JNI_VERSION_1_4) != JNI_OK) &#123;</span><br><span class="line">        LOGI(<span class="string">"ERROR: GetEnv failed\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (registerNatives(env) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        LOGI(<span class="string">"ERROR: registerNatives failed\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> JNI_VERSION_1_4;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">JNI_OnUnload</span><span class="params">(JavaVM* vm, <span class="keyword">void</span> *reserved)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我喝咖啡<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/alipay.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/wechatPay.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">开源框架</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2017/10/05/2017-02-05-Understand-jni-part1/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2017/12/08/2017-12-08-Understand-OkHttp/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          okhttp源码初探 - 基本流程
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2017/01/09/2017-01-09-arith-sort-part5/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">图解排序算法（五）之快速排序和排序总结</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题背景"><span class="toc-number">1.</span> <span class="toc-text">问题背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#动态注册"><span class="toc-number">2.</span> <span class="toc-text">动态注册</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#一-入口函数"><span class="toc-number">2.1.</span> <span class="toc-text">一.入口函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#二-登记本地方法"><span class="toc-number">2.2.</span> <span class="toc-text">二.登记本地方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#三-调用JNI-OnUnload结束"><span class="toc-number">2.3.</span> <span class="toc-text">三.调用JNI_OnUnload结束</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#四-代码实现"><span class="toc-number">2.4.</span> <span class="toc-text">四.代码实现</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -227,9 +380,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
