@@ -243,7 +243,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/02/12/2017-02-12-Understand-jni-part2/">Android与JNI（二）数据类型映射、域描述符说明</a>
+      <a class="article-title" href="/2017/02/12/2017-02-12-Understand-jni-part2/">Android与JNI（二）数据类型映射、描述符说明</a>
     </h1>
   
 
@@ -256,7 +256,38 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h3 id="数据类型映射"><a href="#数据类型映射" class="headerlink" title="数据类型映射"></a>数据类型映射</h3><p>在Java存在两种数据类型： 基本类型 和 引用类型 ，大家都懂的 。<br>在JNI的世界里也存在类似的数据类型，与Java比较起来，其范围更具严格性，如下：  </p>
+<ol>
+<li>primitive types —-基本数据类型，如：int、 float 、char等基本类型</li>
+<li>reference types—-引用类型，如：类、实例、数组。  </li>
+</ol>
+<p>特别需要注意：<strong>数组</strong> —— 不管是对象数组还是基本类型数组，都作为reference types存在。</p>
+<h4 id="基本数据类型映射"><a href="#基本数据类型映射" class="headerlink" title="基本数据类型映射"></a>基本数据类型映射</h4><p><img src="/img/201702/understand-jni-part2-img1.png" alt="understand jni png" style="width: 600px;"></p>
+<p><strong>这些基本数据类型都是可以在Native层直接使用的 。</strong></p>
+<h4 id="引用数据类型映射"><a href="#引用数据类型映射" class="headerlink" title="引用数据类型映射"></a>引用数据类型映射</h4><p><img src="/img/201702/understand-jni-part2-img2.png" alt="understand jni png" style="width: 600px;"></p>
+<p><strong>注意：</strong><br><strong>1、引用数据类型则不能直接使用，需要根据JNI函数进行相应的转换后，才能使用；</strong><br><strong>2、多维数组(包括二维数组)都是引用类型，需要使用 jobjectArray 类型存取其值；</strong> </p>
+<p>例如：二维整型数组就是指向一位数组的数组，其声明使用方式如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获得一维数组 的类引用，即jintArray类型</span></span><br><span class="line">jclass intArrayClass = env-&gt;FindClass(<span class="string">"[I"</span>); </span><br><span class="line"><span class="comment">//构造一个指向jintArray类一维数组的对象数组，该对象数组初始大小为dimion</span></span><br><span class="line">jobjectArray obejctIntArray  =  env-&gt;NewObjectArray(dimion ,intArrayClass , NULL);</span><br></pre></td></tr></table></figure>
+<p>另外，关于引用类型的一个<strong>继承关系</strong>如下，我们可以对具有父子关系的类型进行转换：</p>
+<p><img src="/img/201702/understand-jni-part2-img3.png" alt="understand jni png" style="width: 600px;"></p>
+<h3 id="描述符"><a href="#描述符" class="headerlink" title="描述符"></a>描述符</h3><h4 id="类描述符"><a href="#类描述符" class="headerlink" title="类描述符"></a>类描述符</h4><p><strong>类描述符</strong>是类的完整名称（包名+类名）,将原来的 . 分隔符换成 / 分隔符。<br>例如：在java代码中的java.lang.String类的类描述符就是java/lang/String</p>
+<p>其实，在实践中，我发现可以直接用该类型的域描述符取代，也是可以成功的。<br>例如：jclass intArrCls = env-&gt;FindClass(“java/lang/String”)</p>
+<p>等同于 jclass intArrCls = env-&gt;FindClass(“Ljava/lang/String;”)</p>
+<p><strong>数组类型</strong>的描述符则为，则为：  [ + 其类型的域描述符        (后文说明)，例如：<br>int [ ]     其描述符为[I<br>float [ ]   其描述符为[F<br>String [ ]  其描述符为[Ljava/lang/String;</p>
+<h4 id="域描述符"><a href="#域描述符" class="headerlink" title="域描述符"></a>域描述符</h4><p>1、<strong>基本类型的描述符</strong>已经被定义好了，如下表所示：</p>
+<p><img src="/img/201702/understand-jni-part2-img4.png" alt="understand jni png" style="width: 600px;"></p>
+<p>2、<strong>引用类型的描述符</strong><br>一般引用类型则为 L + 该类型类描述符 + ;   (<strong>注意，这儿的分号“；”只得是JNI的一部分，而不是我们汉语中的分段，下同</strong>)<br>例如：String类型的域描述符为 Ljava/lang/String;  </p>
+<p>对于<strong>数组</strong>，其为 :  [ + 其类型的域描述符 + ,例如：<br>int[ ]     其描述符为[I<br>float[ ]   其描述符为[F<br>String[ ]  其描述符为[Ljava/lang/String;<br>Object[ ]类型的域描述符为[Ljava/lang/Object;</p>
+<p><strong>多维数组</strong>则是 n个[ +该类型的域描述符 , N代表的是几维数组。例如：<br>int  [ ][ ] 其描述符为[[I<br>float[ ][ ] 其描述符为[[F</p>
+<h4 id="方法描述符"><a href="#方法描述符" class="headerlink" title="方法描述符"></a>方法描述符</h4><p>将参数类型的域描述符按照申明顺序放入一对括号中后跟返回值类型的域描述符，规则如下：   </p>
+<ol>
+<li>参数的域描述符叠加返回  </li>
+<li>对于，没有返回值的，用V(表示void型)表示。举例如下：  </li>
+</ol>
+<p><img src="/img/201702/understand-jni-part2-img5.png" alt="understand jni png" style="width: 600px;"></p>
+<p>接下来，我们将通过具体的实例来学习JNI。</p>
+<p>reference: <a href="http://blog.csdn.net/qinjuning" target="_blank" rel="noopener">http://blog.csdn.net/qinjuning</a></p>
+
       
 
       
