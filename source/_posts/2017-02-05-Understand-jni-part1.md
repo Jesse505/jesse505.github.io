@@ -1,7 +1,8 @@
 ---
 title: Android与JNI（一）实现动态注册
-date: 2017-10-05 22:21:15
+date: 2017-02-05 22:21:15
 tags: JNI
+categories: [Android,NDK]
 ---
 
 
