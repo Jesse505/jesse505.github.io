@@ -2,9 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://jesse505.github.io/2017/10/05/2017-02-05-Understand-jni-part1/</loc>
+    <loc>https://jesse505.github.io/2017/02/05/2017-02-05-Understand-jni-part1/</loc>
     
-    <lastmod>2019-01-16T09:42:52.000Z</lastmod>
+    <lastmod>2019-01-21T03:31:45.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://jesse505.github.io/2017/02/12/2017-02-12-Understand-jni-part2/</loc>
+    
+    <lastmod>2019-01-21T03:31:41.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://jesse505.github.io/categories/index.html</loc>
+    
+    <lastmod>2019-01-21T03:24:23.000Z</lastmod>
     
   </url>
   

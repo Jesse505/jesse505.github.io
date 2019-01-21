@@ -14,11 +14,11 @@
 <meta name="keywords" content="JNI">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android与JNI（一）实现动态注册">
-<meta property="og:url" content="https://jesse505.github.io/2017/10/05/2017-02-05-Understand-jni-part1/index.html">
+<meta property="og:url" content="https://jesse505.github.io/2017/02/05/2017-02-05-Understand-jni-part1/index.html">
 <meta property="og:site_name" content="赵一飞的博客">
 <meta property="og:description" content="问题背景Android Studio对JNI的开发是越来越友好了，给Google老大哥大大的赞，AS升级到2.2以后就能通过CMake编译，十分方便，具体可参考官方网站https://developer.android.com/studio/projects/add-native-code，至于JNI编译的其他方式，比如ndk-build，可参考这个哥们的文章。好了说了这么多，并没有讲到今天文章的">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-01-16T09:42:52.000Z">
+<meta property="og:updated_time" content="2019-01-21T03:31:45.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android与JNI（一）实现动态注册">
 <meta name="twitter:description" content="问题背景Android Studio对JNI的开发是越来越友好了，给Google老大哥大大的赞，AS升级到2.2以后就能通过CMake编译，十分方便，具体可参考官方网站https://developer.android.com/studio/projects/add-native-code，至于JNI编译的其他方式，比如ndk-build，可参考这个哥们的文章。好了说了这么多，并没有讲到今天文章的">
@@ -56,7 +56,7 @@
 		  <h1 class="header-author"><a href="/">赵一飞</a></h1>
 		</hgroup>
 		
-		<p class="header-subtitle">爱音乐，爱健身，爱生活</p>
+		<p class="header-subtitle">路在脚下</p>
 		
 
 		<nav class="header-menu">
@@ -65,6 +65,8 @@
 				<li><a href="/">主页</a></li>
 	        
 				<li><a href="/archives">归档</a></li>
+	        
+				<li><a href="/categories">分类</a></li>
 	        
 			</ul>
 		</nav>
@@ -112,9 +114,11 @@
 			  <h1 class="header-author js-header-author">赵一飞</h1>
 			</hgroup>
 			
-			<p class="header-subtitle"><i class="icon icon-quo-left"></i>爱音乐，爱健身，爱生活<i class="icon icon-quo-right"></i></p>
+			<p class="header-subtitle"><i class="icon icon-quo-left"></i>路在脚下<i class="icon icon-quo-right"></i></p>
 			
 			
+			
+				
 			
 				
 			
@@ -133,12 +137,14 @@
 			</nav>
 
 			<nav class="header-menu js-header-menu">
-				<ul style="width: 50%">
+				<ul style="width: 70%">
 				
 				
-					<li style="width: 50%"><a href="/">主页</a></li>
+					<li style="width: 33.333333333333336%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/archives">归档</a></li>
+					<li style="width: 33.333333333333336%"><a href="/archives">归档</a></li>
+		        
+					<li style="width: 33.333333333333336%"><a href="/categories">分类</a></li>
 		        
 				</ul>
 			</nav>
@@ -165,8 +171,8 @@
   
 
         
-        <a href="/2017/10/05/2017-02-05-Understand-jni-part1/" class="archive-article-date">
-  	<time datetime="2017-10-05T14:21:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-10-05</time>
+        <a href="/2017/02/05/2017-02-05-Understand-jni-part1/" class="archive-article-date">
+  	<time datetime="2017-02-05T14:21:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-05</time>
 </a>
         
       </header>
@@ -237,6 +243,17 @@
 	</div>
 
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
 
@@ -286,7 +303,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2017/10/05/2017-02-05-Understand-jni-part1/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2017/02/05/2017-02-05-Understand-jni-part1/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -300,11 +317,11 @@
   
 <nav id="article-nav">
   
-    <a href="/2017/12/08/2017-12-08-Understand-OkHttp/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2017/02/12/2017-02-12-Understand-jni-part2/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          okhttp源码初探 - 基本流程
+          Android与JNI（二）数据类型映射、域描述符说明
         
       </div>
     </a>
@@ -388,7 +405,7 @@
 		toc_hide_index: true,
 		root: "/",
 		innerArchive: true,
-		showTags: false
+		showTags: true
 	}
 </script>
 
