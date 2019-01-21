@@ -8,18 +8,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://jesse505.github.io">
-  <title>Category: NDK | 赵一飞的博客</title>
+  <title>Android与JNI（三）复杂对象的传递 | 赵一飞的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="少壮不努力，老大撸代码">
-<meta property="og:type" content="website">
-<meta property="og:title" content="赵一飞的博客">
-<meta property="og:url" content="https://jesse505.github.io/categories/Android/NDK/index.html">
+  <meta name="description" content="关于JNI方面的代码实例讲解太少了，所以我决定自己整理一份，这篇文章我们主要讲讲Android Java层与Native层之间复杂对象传递的主要场景，主要分为：     Java层向Native层传递 Native层向Java层传递">
+<meta name="keywords" content="JNI">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android与JNI（三）复杂对象的传递">
+<meta property="og:url" content="https://jesse505.github.io/2017/02/25/2017-02-25-Understand-jni-part3/index.html">
 <meta property="og:site_name" content="赵一飞的博客">
-<meta property="og:description" content="少壮不努力，老大撸代码">
+<meta property="og:description" content="关于JNI方面的代码实例讲解太少了，所以我决定自己整理一份，这篇文章我们主要讲讲Android Java层与Native层之间复杂对象传递的主要场景，主要分为：     Java层向Native层传递 Native层向Java层传递">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-01-21T07:26:22.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="赵一飞的博客">
-<meta name="twitter:description" content="少壮不努力，老大撸代码">
+<meta name="twitter:title" content="Android与JNI（三）复杂对象的传递">
+<meta name="twitter:description" content="关于JNI方面的代码实例讲解太少了，所以我决定自己整理一份，这篇文章我们主要讲讲Android Java层与Native层之间复杂对象传递的主要场景，主要分为：     Java层向Native层传递 Native层向Java层传递">
   
     <link rel="alternative" href="/atom.xml" title="赵一飞的博客" type="application/atom+xml">
   
@@ -157,36 +159,100 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-2017-02-25-Understand-jni-part3" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      Android与JNI（三）复杂对象的传递
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/02/25/2017-02-25-Understand-jni-part3/" class="archive-article-date">
+
+        
+        <a href="/2017/02/25/2017-02-25-Understand-jni-part3/" class="archive-article-date">
   	<time datetime="2017-02-25T14:40:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-25</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/25/2017-02-25-Understand-jni-part3/">Android与JNI（三）复杂对象的传递</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>关于JNI方面的代码实例讲解太少了，所以我决定自己整理一份，这篇文章我们主要讲讲Android Java层与Native层之间复杂对象传递的主要场景，主要分为：   </p>
+<ol>
+<li>Java层向Native层传递</li>
+<li>Native层向Java层传递</li>
+</ol>
+<a id="more"></a>
+<h3 id="Java层向Native层传递"><a href="#Java层向Native层传递" class="headerlink" title="Java层向Native层传递"></a>Java层向Native层传递</h3><h5 id="1-Java层传递数组给Native"><a href="#1-Java层传递数组给Native" class="headerlink" title="1. Java层传递数组给Native"></a>1. Java层传递数组给Native</h5><p>直接上代码，注释写的都很清楚，自己照着敲一遍基本就明白了：  </p>
+<p>Java层原型方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">inputSortArray</span><span class="params">(<span class="keyword">int</span>[] array)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>Native层方法实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 比较两个数的大小</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">compare</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *a, <span class="keyword">const</span> <span class="keyword">void</span> *b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (*(<span class="keyword">int</span> *) a - *(<span class="keyword">int</span> *) b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Java层传递数组给Native</span></span><br><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">inputSortArray</span><span class="params">(JNIEnv *env, jobject obj, jintArray jintArray)</span> </span>&#123;</span><br><span class="line">    LOGI(<span class="string">"inputSortArray begin"</span>);</span><br><span class="line">    <span class="comment">//获取数组中的元素</span></span><br><span class="line">    jint *int_arr = env-&gt;GetIntArrayElements(jintArray, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="comment">//获取数组的长度</span></span><br><span class="line">    <span class="keyword">int</span> length = env-&gt;GetArrayLength(jintArray);</span><br><span class="line">    <span class="comment">//快速排序</span></span><br><span class="line">    qsort(int_arr, length, <span class="keyword">sizeof</span>(<span class="keyword">int</span>), compare);</span><br><span class="line">    <span class="comment">// 同步操作后的数组内存到java中</span></span><br><span class="line">    <span class="comment">// 最后一个参数mode的解释</span></span><br><span class="line">    <span class="comment">// 0：Java的数组更新同步，然后释放C/C++的数组内存</span></span><br><span class="line">    <span class="comment">// JNI_ABORT：Java的数组不会更新同步，但是释放C/C++的数组内存</span></span><br><span class="line">    <span class="comment">// JNI_COMMIT：Java的数组更新同步，不释放C/C++的数组内存（但是函数执行完了局部的变量还是会释放掉）</span></span><br><span class="line">    env-&gt;ReleaseIntArrayElements(jintArray, int_arr, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="2-Java层传递复杂对象给Native"><a href="#2-Java层传递复杂对象给Native" class="headerlink" title="2. Java层传递复杂对象给Native"></a>2. Java层传递复杂对象给Native</h5><p>Java层原型方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">printStuInfoAtNative</span><span class="params">(Student stu)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>Student是一个静态内部类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> age = <span class="number">21</span>;</span><br><span class="line">    String name = <span class="string">"zhaoyifei"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(<span class="keyword">int</span> age, String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"name:"</span> + name + <span class="string">" age:"</span> + age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Native层方法实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Java层传递复杂对象给Native</span></span><br><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">printStuInfoAtNative</span><span class="params">(JNIEnv *env, jobject obj, jobject stu_obj)</span> </span>&#123;</span><br><span class="line">    jclass stu_cls = env-&gt;GetObjectClass(stu_obj);<span class="comment">//获得student类引用</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">NULL</span> == stu_cls) &#123;</span><br><span class="line">        LOGI(<span class="string">"GetObjectClass failed"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    jfieldID ageFieldId = env-&gt;GetFieldID(stu_cls, <span class="string">"age"</span>, <span class="string">"I"</span>); <span class="comment">//获得属性ID</span></span><br><span class="line">    jfieldID nameFieldId = env-&gt;GetFieldID(stu_cls, <span class="string">"name"</span>, <span class="string">"Ljava/lang/String;"</span>); <span class="comment">//获得属性ID</span></span><br><span class="line">    jint age = env-&gt;GetIntField(stu_obj, ageFieldId); <span class="comment">//获得属性值</span></span><br><span class="line">    jstring name = (jstring) env-&gt;GetObjectField(stu_obj, nameFieldId); <span class="comment">//获得属性值</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *c_name = env-&gt;GetStringUTFChars(name, <span class="literal">NULL</span>); <span class="comment">//转换为char*</span></span><br><span class="line">    LOGI(<span class="string">"name: %s, age: %d"</span>, c_name, (<span class="keyword">int</span>) age);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(name, c_name); <span class="comment">//释放引用</span></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Native层向Java层传递"><a href="#Native层向Java层传递" class="headerlink" title="Native层向Java层传递"></a>Native层向Java层传递</h3><h5 id="1-Native层传递数组给Java层"><a href="#1-Native层传递数组给Java层" class="headerlink" title="1.Native层传递数组给Java层"></a>1.Native层传递数组给Java层</h5><p>Java层原型方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">int</span>[] getArray(<span class="keyword">int</span> len);</span><br></pre></td></tr></table></figure>
+<p>Native层方法实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Native层传递数组给Java层</span></span><br><span class="line"><span class="function">JNIEXPORT jintArray JNICALL <span class="title">getArray</span><span class="params">(JNIEnv *env, jobject obj, jint len)</span> </span>&#123;</span><br><span class="line">    jintArray jintArray = env-&gt;NewIntArray(len);</span><br><span class="line">    jint *elements = env-&gt;GetIntArrayElements(jintArray, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; ++i) &#123;</span><br><span class="line">        elements[i] = i;</span><br><span class="line">    &#125;</span><br><span class="line">    env-&gt;ReleaseIntArrayElements(jintArray, elements, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> jintArray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="2-Native层传递二维数组给Java层"><a href="#2-Native层传递二维数组给Java层" class="headerlink" title="2.Native层传递二维数组给Java层"></a>2.Native层传递二维数组给Java层</h5><p>Java层原型方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">int</span>[][] getTwoArray(<span class="keyword">int</span> len);</span><br></pre></td></tr></table></figure>
+<p>Native层方法实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Native层传递二维数组给Java层</span></span><br><span class="line"><span class="function">JNIEXPORT jobjectArray JNICALL <span class="title">getTwoArray</span><span class="params">(JNIEnv *env, jobject obj, jint len)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//获得一维数组的类引用，即jintArray类型</span></span><br><span class="line">    jclass intArrayClass = env-&gt;FindClass(<span class="string">"[I"</span>);</span><br><span class="line">    <span class="comment">//构造指向jintArray一维数组的对象数组，数组长度为len</span></span><br><span class="line">    jobjectArray objectIntArray = env-&gt;NewObjectArray(len, intArrayClass, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len; ++i) &#123;</span><br><span class="line">        jintArray intArray = env-&gt;NewIntArray(len);</span><br><span class="line">        <span class="comment">//初始化一个容器，假设len&lt;10</span></span><br><span class="line">        jint temp[<span class="number">10</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; len; ++j) &#123;</span><br><span class="line">            temp[j] = j + i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//设置一维数组的值</span></span><br><span class="line">        env-&gt;SetIntArrayRegion(intArray, <span class="number">0</span>, len, temp);</span><br><span class="line">        <span class="comment">//设置对象数组的值</span></span><br><span class="line">        env-&gt;SetObjectArrayElement(objectIntArray, i, intArray);</span><br><span class="line">        <span class="comment">//删除局部引用</span></span><br><span class="line">        env-&gt;DeleteLocalRef(intArray);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> objectIntArray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="3-Native层传递复杂对象给Java层"><a href="#3-Native层传递复杂对象给Java层" class="headerlink" title="3.Native层传递复杂对象给Java层"></a>3.Native层传递复杂对象给Java层</h5><p>Java层原型方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> Student <span class="title">getStuInfo</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<p>Native层方法实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Native层传递复杂对象给Java层</span></span><br><span class="line"><span class="function">JNIEXPORT jobject JNICALL <span class="title">getStuInfo</span><span class="params">(JNIEnv *env, jobject obj)</span> </span>&#123;</span><br><span class="line">    LOGI(<span class="string">"getStuInfo begin"</span>);</span><br><span class="line">    jclass stu_cls = env-&gt;FindClass(<span class="string">"com/example/github/jnidemo/MainActivity$Student"</span>);</span><br><span class="line">    <span class="keyword">if</span> (stu_cls == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//获得构造方法Id,函数名为&lt;init&gt;,返回类型为void,即V</span></span><br><span class="line">    jmethodID constructMId = env-&gt;GetMethodID(stu_cls, <span class="string">"&lt;init&gt;"</span>, <span class="string">"(ILjava/lang/String;)V"</span>);</span><br><span class="line">    <span class="keyword">if</span> (constructMId == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        LOGI(<span class="string">"getStuInfo getConstruc failed"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    jstring name = env-&gt;NewStringUTF(<span class="string">"赵一飞"</span>);</span><br><span class="line">    <span class="comment">//构造一个对象，调用构造方法并且传入相应参数</span></span><br><span class="line">    <span class="keyword">return</span> env-&gt;NewObject(stu_cls, constructMId, <span class="number">26</span>, name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="4-Native层传递集合对象给Java层"><a href="#4-Native层传递集合对象给Java层" class="headerlink" title="4.Native层传递集合对象给Java层"></a>4.Native层传递集合对象给Java层</h5><p>Java层原型方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> ArrayList&lt;Student&gt; <span class="title">getListStudents</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<p>Native层方法实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//Native层传递集合对象给Java层</span></span><br><span class="line"><span class="function">JNIEXPORT jobject JNICALL <span class="title">getListStudents</span><span class="params">(JNIEnv *env, jobject obj)</span> </span>&#123;</span><br><span class="line">    jclass list_cls = env-&gt;FindClass(<span class="string">"java/util/ArrayList"</span>);<span class="comment">//获得ArrayList类引用</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (list_cls == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    jmethodID list_costruct = env-&gt;GetMethodID(list_cls, <span class="string">"&lt;init&gt;"</span>, <span class="string">"()V"</span>); <span class="comment">//获得得构造函数Id</span></span><br><span class="line"></span><br><span class="line">    jobject list_obj = env-&gt;NewObject(list_cls, list_costruct); <span class="comment">//创建一个Arraylist集合对象</span></span><br><span class="line">    <span class="comment">//或得Arraylist类中的 add()方法ID，其方法原型为： boolean add(Object object) ;</span></span><br><span class="line">    jmethodID list_add = env-&gt;GetMethodID(list_cls, <span class="string">"add"</span>, <span class="string">"(Ljava/lang/Object;)Z"</span>);</span><br><span class="line"></span><br><span class="line">    jclass stu_cls = env-&gt;FindClass(</span><br><span class="line">            <span class="string">"com/example/github/jnidemo/MainActivity$Student"</span>);<span class="comment">//获得Student类引用</span></span><br><span class="line">    <span class="comment">//获得该类型的构造函数  函数名为 &lt;init&gt; 返回类型必须为 void 即 V</span></span><br><span class="line">    jmethodID stu_costruct = env-&gt;GetMethodID(stu_cls, <span class="string">"&lt;init&gt;"</span>, <span class="string">"(ILjava/lang/String;)V"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">        jstring str = env-&gt;NewStringUTF(<span class="string">"Native"</span>);</span><br><span class="line">        <span class="comment">//通过调用该对象的构造函数来new 一个 Student实例</span></span><br><span class="line">        jobject stu_obj = env-&gt;NewObject(stu_cls, stu_costruct, <span class="number">10</span>, str);  <span class="comment">//构造一个对象</span></span><br><span class="line"></span><br><span class="line">        env-&gt;CallBooleanMethod(list_obj, list_add, stu_obj); <span class="comment">//执行Arraylist类实例的add方法，添加一个stu对象</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> list_obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这几种实例只是常见的几种数据交互的场景，后面会持续更新，敬请期待！</p>
+<p><a href="https://github.com/Jesse505/BlogDemo/tree/master/JniDemo" target="_blank" rel="noopener">完整代码</a>,希望这篇文章能帮助到你，喜欢记得star下，谢谢！</p>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我喝咖啡<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/alipay.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/wechatPay.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -198,7 +264,7 @@
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -215,123 +281,126 @@
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2017/02/25/2017-02-25-Understand-jni-part3/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/02/12/2017-02-12-Understand-jni-part2/" class="archive-article-date">
-  	<time datetime="2017-02-12T02:44:57.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-12</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2017/12/08/2017-12-08-Understand-OkHttp/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          okhttp源码初探 - 基本流程
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/02/12/2017-02-12-Understand-jni-part2/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Android与JNI（二）数据类型映射、描述符说明</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/12/2017-02-12-Understand-jni-part2/">Android与JNI（二）数据类型映射、描述符说明</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/NDK//" class="article-tag-list-link color4">NDK</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Java层向Native层传递"><span class="toc-number">1.</span> <span class="toc-text">Java层向Native层传递</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-Java层传递数组给Native"><span class="toc-number">1.0.1.</span> <span class="toc-text">1. Java层传递数组给Native</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-Java层传递复杂对象给Native"><span class="toc-number">1.0.2.</span> <span class="toc-text">2. Java层传递复杂对象给Native</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Native层向Java层传递"><span class="toc-number">2.</span> <span class="toc-text">Native层向Java层传递</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-Native层传递数组给Java层"><span class="toc-number">2.0.1.</span> <span class="toc-text">1.Native层传递数组给Java层</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-Native层传递二维数组给Java层"><span class="toc-number">2.0.2.</span> <span class="toc-text">2.Native层传递二维数组给Java层</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-Native层传递复杂对象给Java层"><span class="toc-number">2.0.3.</span> <span class="toc-text">3.Native层传递复杂对象给Java层</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-Native层传递集合对象给Java层"><span class="toc-number">2.0.4.</span> <span class="toc-text">4.Native层传递集合对象给Java层</span></a></li></ol></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/02/05/2017-02-05-Understand-jni-part1/" class="archive-article-date">
-  	<time datetime="2017-02-05T14:21:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/05/2017-02-05-Understand-jni-part1/">Android与JNI（一）实现动态注册</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/NDK//" class="article-tag-list-link color4">NDK</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+
   
   
-    </div></section>
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -354,10 +423,10 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
 		root: "/",
