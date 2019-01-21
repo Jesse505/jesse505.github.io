@@ -23,7 +23,7 @@
 <meta property="og:image" content="https://jesse505.github.io/img/201702/understand-jni-part2-img3.png">
 <meta property="og:image" content="https://jesse505.github.io/img/201702/understand-jni-part2-img4.png">
 <meta property="og:image" content="https://jesse505.github.io/img/201702/understand-jni-part2-img5.png">
-<meta property="og:updated_time" content="2019-01-21T06:38:16.000Z">
+<meta property="og:updated_time" content="2019-01-21T06:43:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android与JNI（二）数据类型映射、描述符说明">
 <meta name="twitter:description" content="数据类型映射在Java存在两种数据类型： 基本类型 和 引用类型 ，大家都懂的 。在JNI的世界里也存在类似的数据类型，与Java比较起来，其范围更具严格性，如下：    primitive types —-基本数据类型，如：int、 float 、char等基本类型 reference types—-引用类型，如：类、实例、数组。    特别需要注意：数组 —— 不管是对象数组还是基本类型数组，">
@@ -191,6 +191,7 @@
 <li>reference types—-引用类型，如：类、实例、数组。  </li>
 </ol>
 <p>特别需要注意：<strong>数组</strong> —— 不管是对象数组还是基本类型数组，都作为reference types存在。</p>
+<a id="more"></a>
 <h4 id="基本数据类型映射"><a href="#基本数据类型映射" class="headerlink" title="基本数据类型映射"></a>基本数据类型映射</h4><p><img src="/img/201702/understand-jni-part2-img1.png" alt="understand jni png" style="width: 600px;"></p>
 <p><strong>这些基本数据类型都是可以在Native层直接使用的 。</strong></p>
 <h4 id="引用数据类型映射"><a href="#引用数据类型映射" class="headerlink" title="引用数据类型映射"></a>引用数据类型映射</h4><p><img src="/img/201702/understand-jni-part2-img2.png" alt="understand jni png" style="width: 600px;"></p>
