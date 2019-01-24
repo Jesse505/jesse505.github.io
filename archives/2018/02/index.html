@@ -8,20 +8,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://jesse505.github.io">
-  <title>Android与JNI（四）C操作Java | 赵一飞的博客</title>
+  <title>Archives: 2018/2 | 赵一飞的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="既然Java层通过Native方法可以调用C代码，那么其实C代码也是可以调用Java代码的，JNI封装了一系列方法来达到调用java的目的，主要有以下几种常见场景：    读取设置成员属性；    读取设置静态属性；   调用Java成员方法；   调用Java静态方法；">
-<meta name="keywords" content="JNI">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Android与JNI（四）C操作Java">
-<meta property="og:url" content="https://jesse505.github.io/2017/02/28/2017-02-28-Understand-jni-part4/index.html">
+  <meta name="description" content="少壮不努力，老大撸代码">
+<meta property="og:type" content="website">
+<meta property="og:title" content="赵一飞的博客">
+<meta property="og:url" content="https://jesse505.github.io/archives/2018/02/index.html">
 <meta property="og:site_name" content="赵一飞的博客">
-<meta property="og:description" content="既然Java层通过Native方法可以调用C代码，那么其实C代码也是可以调用Java代码的，JNI封装了一系列方法来达到调用java的目的，主要有以下几种常见场景：    读取设置成员属性；    读取设置静态属性；   调用Java成员方法；   调用Java静态方法；">
+<meta property="og:description" content="少壮不努力，老大撸代码">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-01-21T09:53:47.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Android与JNI（四）C操作Java">
-<meta name="twitter:description" content="既然Java层通过Native方法可以调用C代码，那么其实C代码也是可以调用Java代码的，JNI封装了一系列方法来达到调用java的目的，主要有以下几种常见场景：    读取设置成员属性；    读取设置静态属性；   调用Java成员方法；   调用Java静态方法；">
+<meta name="twitter:title" content="赵一飞的博客">
+<meta name="twitter:description" content="少壮不努力，老大撸代码">
   
     <link rel="alternative" href="/atom.xml" title="赵一飞的博客" type="application/atom+xml">
   
@@ -159,103 +157,48 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-2017-02-28-Understand-jni-part4" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      Android与JNI（四）C操作Java
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2018" class="archive-year">2018</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/02/08/2018-02-08-Understand-OkHttp/" class="archive-article-date">
+  	<time datetime="2018-02-08T12:17:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-02-08</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/02/08/2018-02-08-Understand-OkHttp/">okhttp源码初探 - 基本流程</a>
     </h1>
   
 
-        
-        <a href="/2017/02/28/2017-02-28-Understand-jni-part4/" class="archive-article-date">
-  	<time datetime="2017-02-28T13:20:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-28</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>既然Java层通过Native方法可以调用C代码，那么其实C代码也是可以调用Java代码的，JNI封装了一系列方法来达到调用java的目的，主要有以下几种常见场景：  </p>
-<ol>
-<li>读取设置成员属性；   </li>
-<li>读取设置静态属性；  </li>
-<li>调用Java成员方法；  </li>
-<li>调用Java静态方法； </li>
-</ol>
-<a id="more"></a> 
-<h4 id="1-读取设置成员属性"><a href="#1-读取设置成员属性" class="headerlink" title="1.读取设置成员属性"></a>1.读取设置成员属性</h4><p>这部分还是直接上代码了，注释都很清楚，后续文章会把JNI的常用函数列举出来，在这里就不一一解释了。</p>
-<p>Java层代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> String str = <span class="string">"成员属性"</span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">accessField</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
-<p>Native层代码实现</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设置成员属性</span></span><br><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">accessField</span><span class="params">(JNIEnv *env, jobject obj)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//获取类引用</span></span><br><span class="line">    jclass cls = env-&gt;GetObjectClass(obj);</span><br><span class="line">    <span class="comment">//获取属性ID</span></span><br><span class="line">    jfieldID fid = env-&gt;GetFieldID(cls, <span class="string">"str"</span>, <span class="string">"Ljava/lang/String;"</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">NULL</span> == fid) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//获取属性值</span></span><br><span class="line">    jstring jstr_value = (jstring)env-&gt;GetObjectField(obj, fid);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *value = env-&gt;GetStringUTFChars(jstr_value, <span class="literal">NULL</span>);</span><br><span class="line">    LOGI(<span class="string">"成员属性：%s"</span>, value);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(jstr_value, value);</span><br><span class="line">    jstring cValue = env-&gt;NewStringUTF(<span class="string">"修改后的成员属性"</span>);</span><br><span class="line">    <span class="comment">//设置属性值</span></span><br><span class="line">    env-&gt;SetObjectField(obj, fid, cValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="2-读取设置静态属性"><a href="#2-读取设置静态属性" class="headerlink" title="2.读取设置静态属性"></a>2.读取设置静态属性</h4><p>Java层代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> String static_str= <span class="string">"静态属性"</span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">accessStaticField</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
-<p>Native层代码实现</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设置静态属性</span></span><br><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">accessStaticField</span><span class="params">(JNIEnv *env, jobject obj)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//获取类引用</span></span><br><span class="line">    jclass cls = env-&gt;GetObjectClass(obj);</span><br><span class="line">    <span class="comment">//获取静态属性ID</span></span><br><span class="line">    jfieldID fid = env-&gt;GetStaticFieldID(cls, <span class="string">"static_str"</span>, <span class="string">"Ljava/lang/String;"</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">NULL</span> == fid) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    jstring jstr_value = (jstring)env-&gt;GetStaticObjectField(cls, fid);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *value = env-&gt;GetStringUTFChars(jstr_value, <span class="literal">NULL</span>);</span><br><span class="line">    LOGI(<span class="string">"静态成员属性：%s"</span>, value);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(jstr_value, value);</span><br><span class="line">    jstring cValue = env-&gt;NewStringUTF(<span class="string">"修改后的静态属性"</span>);</span><br><span class="line">    <span class="comment">//设置静态属性值</span></span><br><span class="line">    env-&gt;SetStaticObjectField(cls, fid, cValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="3-调用Java成员方法"><a href="#3-调用Java成员方法" class="headerlink" title="3.调用Java成员方法"></a>3.调用Java成员方法</h4><p>Java层代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a + b;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">accessMethod</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
-<p>Native层代码实现</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//调用成员方法</span></span><br><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">accessMethod</span><span class="params">(JNIEnv *env, jobject obj)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//获取类引用</span></span><br><span class="line">    jclass cls = env-&gt;GetObjectClass(obj);</span><br><span class="line">    <span class="comment">//获取成员方法ID</span></span><br><span class="line">    jmethodID mid = env-&gt;GetMethodID(cls, <span class="string">"sum"</span>, <span class="string">"(II)I"</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">NULL</span> == mid) &#123;</span><br><span class="line">        LOGI(<span class="string">"accessMethod failed"</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> sum = env-&gt;CallIntMethod(obj, mid, <span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">    LOGI(<span class="string">"sum: %d"</span>, sum);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="4-调用Java静态方法"><a href="#4-调用Java静态方法" class="headerlink" title="4.调用Java静态方法"></a>4.调用Java静态方法</h4><p>Java层代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">diff</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> a - b;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">accessStaticMethod</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
-<p>Native层代码实现</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//调用静态方法</span></span><br><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">accessStaticMethod</span><span class="params">(JNIEnv *env, jobject obj)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//获取类引用</span></span><br><span class="line">    jclass cls = env-&gt;GetObjectClass(obj);</span><br><span class="line">    <span class="comment">//获取静态方法ID</span></span><br><span class="line">    jmethodID mid = env-&gt;GetStaticMethodID(cls, <span class="string">"diff"</span>, <span class="string">"(II)I"</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">NULL</span> == mid) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> sum = env-&gt;CallStaticIntMethod(cls, mid, <span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">    LOGI(<span class="string">"diff: %d"</span>, sum);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><a href="https://github.com/Jesse505/BlogDemo/tree/master/JniDemo" target="_blank" rel="noopener">完整代码地址</a>，希望这篇文章能帮助到你，喜欢记得star下，谢谢！</p>
-
-      
-
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我喝咖啡<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    <div class="reward-box-item">
-                      <img class="reward-img" src="/img/alipay.jpg">
-                      <span class="reward-type">支付宝</span>
-                    </div>
-                    
-                    
-                    <div class="reward-box-item">
-                      <img class="reward-img" src="/img/wechatPay.jpg">
-                      <span class="reward-type">微信</span>
-                    </div>
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">开源框架</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -265,133 +208,24 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="/categories/Android/NDK//" class="article-tag-list-link color4">NDK</a>
+        			<a href="/categories/Android/开源框架//" class="article-tag-list-link color5">开源框架</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2017/02/28/2017-02-28-Understand-jni-part4/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2018/02/08/2018-02-08-Understand-OkHttp/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          okhttp源码初探 - 基本流程
-        
-      </div>
-    </a>
   
   
-    <a href="/2017/02/25/2017-02-25-Understand-jni-part3/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Android与JNI（三）复杂对象的传递</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-读取设置成员属性"><span class="toc-number">1.</span> <span class="toc-text">1.读取设置成员属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-读取设置静态属性"><span class="toc-number">2.</span> <span class="toc-text">2.读取设置静态属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-调用Java成员方法"><span class="toc-number">3.</span> <span class="toc-text">3.调用Java成员方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-调用Java静态方法"><span class="toc-number">4.</span> <span class="toc-text">4.调用Java静态方法</span></a></li></ol>
-                    </div>
-                </span>
-            </div>
-        </div>
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  
+    
 
 
           </div>
@@ -414,8 +248,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
-		isArchive: false,
+		isPost: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
