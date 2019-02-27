@@ -8,18 +8,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://jesse505.github.io">
-  <title>Category: Android | 赵一飞的博客</title>
+  <title>Java进阶 - 反射总结 | 赵一飞的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="少壮不努力，老大撸代码">
-<meta property="og:type" content="website">
-<meta property="og:title" content="赵一飞的博客">
-<meta property="og:url" content="https://jesse505.github.io/categories/Android/index.html">
+  <meta name="description" content="使用反射获取类的信息获取类的所有变量信息调用getFields()输出类以及父类所有的public声明的变量；调用getDeclaredFields()输出类的所有成员变量，不问访问权限； 获取类的所有方法信息调用getMethods()输出类以及父类所有的public声明的方法；调用getDeclaredMethods()输出类的所有成员方法，不问访问权限；">
+<meta name="keywords" content="反射">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java进阶 - 反射总结">
+<meta property="og:url" content="https://jesse505.github.io/2018/03/04/2018-03-04-Java-reflect-01/index.html">
 <meta property="og:site_name" content="赵一飞的博客">
-<meta property="og:description" content="少壮不努力，老大撸代码">
+<meta property="og:description" content="使用反射获取类的信息获取类的所有变量信息调用getFields()输出类以及父类所有的public声明的变量；调用getDeclaredFields()输出类的所有成员变量，不问访问权限； 获取类的所有方法信息调用getMethods()输出类以及父类所有的public声明的方法；调用getDeclaredMethods()输出类的所有成员方法，不问访问权限；">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-02-27T08:08:21.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="赵一飞的博客">
-<meta name="twitter:description" content="少壮不努力，老大撸代码">
+<meta name="twitter:title" content="Java进阶 - 反射总结">
+<meta name="twitter:description" content="使用反射获取类的信息获取类的所有变量信息调用getFields()输出类以及父类所有的public声明的变量；调用getDeclaredFields()输出类的所有成员变量，不问访问权限； 获取类的所有方法信息调用getMethods()输出类以及父类所有的public声明的方法；调用getDeclaredMethods()输出类的所有成员方法，不问访问权限；">
   
     <link rel="alternative" href="/atom.xml" title="赵一飞的博客" type="application/atom+xml">
   
@@ -157,350 +159,227 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-2018-03-04-Java-reflect-01" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java进阶 - 反射总结
+    </h1>
+  
+
+        
+        <a href="/2018/03/04/2018-03-04-Java-reflect-01/" class="archive-article-date">
+  	<time datetime="2018-03-04T14:01:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-04</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="使用反射获取类的信息"><a href="#使用反射获取类的信息" class="headerlink" title="使用反射获取类的信息"></a>使用反射获取类的信息</h2><h3 id="获取类的所有变量信息"><a href="#获取类的所有变量信息" class="headerlink" title="获取类的所有变量信息"></a>获取类的所有变量信息</h3><p>调用getFields()输出类以及父类所有的public声明的变量；<br>调用getDeclaredFields()输出类的所有成员变量，不问访问权限；</p>
+<h3 id="获取类的所有方法信息"><a href="#获取类的所有方法信息" class="headerlink" title="获取类的所有方法信息"></a>获取类的所有方法信息</h3><p>调用getMethods()输出类以及父类所有的public声明的方法；<br>调用getDeclaredMethods()输出类的所有成员方法，不问访问权限；</p>
+<a id="more"></a>
+<h2 id="访问或操作类的私有变量和私有方法"><a href="#访问或操作类的私有变量和私有方法" class="headerlink" title="访问或操作类的私有变量和私有方法"></a>访问或操作类的私有变量和私有方法</h2><p>新建一个测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestClass</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String MSG = <span class="string">"Original"</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String FINAL_VALUE = <span class="string">"hello"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">privateMethod</span><span class="params">(String head , <span class="keyword">int</span> tail)</span></span>&#123;</span><br><span class="line">        System.out.print(head + tail);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getMsg</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> MSG;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function">publiv String <span class="title">getFinalValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    	 <span class="keyword">return</span> FINAL_VALUE;</span><br><span class="line">	 &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="访问私有方法"><a href="#访问私有方法" class="headerlink" title="访问私有方法"></a>访问私有方法</h3><p>访问TestClass中privateMethod()私有方法,直接看代码，注释写的很清楚：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 访问对象的私有方法</span></span><br><span class="line"><span class="comment"> * 为简洁代码，在方法上抛出总的异常，实际开发别这样</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getPrivateMethod</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">    <span class="comment">//1. 获取 Class 类实例</span></span><br><span class="line">    TestClass testClass = <span class="keyword">new</span> TestClass();</span><br><span class="line">    Class mClass = testClass.getClass();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//2. 获取私有方法</span></span><br><span class="line">    <span class="comment">//第一个参数为要获取的私有方法的名称</span></span><br><span class="line">    <span class="comment">//第二个为要获取方法的参数的类型，参数为 Class...，没有参数就是null</span></span><br><span class="line">    <span class="comment">//方法参数也可这么写 ：new Class[]&#123;String.class , int.class&#125;</span></span><br><span class="line">    Method privateMethod =</span><br><span class="line">            mClass.getDeclaredMethod(<span class="string">"privateMethod"</span>, String.class, <span class="keyword">int</span>.class);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//3. 开始操作方法</span></span><br><span class="line">    <span class="keyword">if</span> (privateMethod != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">//获取私有方法的访问权</span></span><br><span class="line">        <span class="comment">//只是获取访问权，并不是修改实际权限</span></span><br><span class="line">        privateMethod.setAccessible(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//使用 invoke 反射调用私有方法</span></span><br><span class="line">        <span class="comment">//privateMethod 是获取到的私有方法</span></span><br><span class="line">        <span class="comment">//testClass 要操作的对象</span></span><br><span class="line">        <span class="comment">//后面两个参数传实参</span></span><br><span class="line">        privateMethod.invoke(testClass, <span class="string">"Java Reflect "</span>, <span class="number">666</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="访问私有变量"><a href="#访问私有变量" class="headerlink" title="访问私有变量"></a>访问私有变量</h3><p>访问TestClass中的MSG变量，其初始值为 “Original” ，我们要修改为 “Modified”,直接看代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 修改对象私有变量的值</span></span><br><span class="line"><span class="comment"> * 为简洁代码，在方法上抛出总的异常</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">modifyPrivateFiled</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="comment">//1. 获取 Class 类实例</span></span><br><span class="line">    TestClass testClass = <span class="keyword">new</span> TestClass();</span><br><span class="line">    Class mClass = testClass.getClass();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//2. 获取私有变量</span></span><br><span class="line">    Field privateField = mClass.getDeclaredField(<span class="string">"MSG"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//3. 操作私有变量</span></span><br><span class="line">    <span class="keyword">if</span> (privateField != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">//获取私有变量的访问权</span></span><br><span class="line">        privateField.setAccessible(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//修改私有变量，并输出以测试</span></span><br><span class="line">        System.out.println(<span class="string">"Before Modify：MSG = "</span> + testClass.getMsg());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//调用 set(object , value) 修改变量的值</span></span><br><span class="line">        <span class="comment">//privateField 是获取到的私有变量</span></span><br><span class="line">        <span class="comment">//testClass 要操作的对象</span></span><br><span class="line">        <span class="comment">//"Modified" 为要修改成的值</span></span><br><span class="line">        privateField.set(testClass, <span class="string">"Modified"</span>);</span><br><span class="line">        System.out.println(<span class="string">"After Modify：MSG = "</span> + testClass.getMsg());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="修改私有常量"><a href="#修改私有常量" class="headerlink" title="修改私有常量"></a>修改私有常量</h3><p>补充一个知识点：<br>Java 虚拟机（JVM）在编译 .java 文件得到 .class 文件时，会优化我们的代码以提升效率。其中一个优化就是：JVM 在编译阶段会把引用常量的代码替换成具体的常量值，<strong>所以就算我们修改了私有常量也没有多大的意义</strong>。为了修改有意义，我们可以尝试如下修改：</p>
+<h4 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h4><p>在声明常量时不赋值，在构造函数里赋值，因为构造函数是在new对象时才会调用，所以就避免了JVM编译阶段的优化</p>
+<h4 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h4><p>使用三目运算符赋值，因为三目运算符是在运行时刻计算的，所以也避免了编译时候被优化：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> String FINAL_VALUE</span><br><span class="line">        = <span class="keyword">null</span> == <span class="keyword">null</span> ? <span class="string">"FINAL"</span> : <span class="keyword">null</span>;</span><br></pre></td></tr></table></figure>
+<p>最后总结一下，私有常量通过反射肯定是可以修改的，只是修改以后有没有意义还需要再确定。</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我喝咖啡<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/alipay.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/wechatPay.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/02/2018-10-02-Understand-Component-part1/" class="archive-article-date">
-  	<time datetime="2018-10-02T14:01:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/02/2018-10-02-Understand-Component-part1/">Android组件化最佳实践</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">组件化</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">反射</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/组件化//" class="article-tag-list-link color4">组件化</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/02/08/2018-02-08-Understand-OkHttp/" class="archive-article-date">
-  	<time datetime="2018-02-08T12:17:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-02-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/02/08/2018-02-08-Understand-OkHttp/">okhttp源码初探 - 基本流程</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">开源框架</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/开源框架//" class="article-tag-list-link color5">开源框架</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
       
-        </div></section>
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Java//" class="article-tag-list-link color5">Java</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Java/进阶//" class="article-tag-list-link color3">进阶</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
       
+
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/02/28/2017-02-28-Understand-jni-part4/" class="archive-article-date">
-  	<time datetime="2017-02-28T13:20:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/28/2017-02-28-Understand-jni-part4/">Android与JNI（四）C操作Java</a>
-    </h1>
-  
+      </div>
+    </span>
+  </div>
+</div>
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
-        		</li>
-      		
-		</ul>
-	</div>
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2018/03/04/2018-03-04-Java-reflect-01/" alt="微信分享二维码">
+    </div>
+</div>
 
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/NDK//" class="article-tag-list-link color4">NDK</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/02/25/2017-02-25-Understand-jni-part3/" class="archive-article-date">
-  	<time datetime="2017-02-25T14:40:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-25</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2018/10/02/2018-10-02-Understand-Component-part1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Android组件化最佳实践
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/08/2018-02-08-Understand-OkHttp/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">okhttp源码初探 - 基本流程</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/25/2017-02-25-Understand-jni-part3/">Android与JNI（三）复杂对象的传递</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/NDK//" class="article-tag-list-link color4">NDK</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#使用反射获取类的信息"><span class="toc-number">1.</span> <span class="toc-text">使用反射获取类的信息</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#获取类的所有变量信息"><span class="toc-number">1.1.</span> <span class="toc-text">获取类的所有变量信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#获取类的所有方法信息"><span class="toc-number">1.2.</span> <span class="toc-text">获取类的所有方法信息</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#访问或操作类的私有变量和私有方法"><span class="toc-number">2.</span> <span class="toc-text">访问或操作类的私有变量和私有方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#访问私有方法"><span class="toc-number">2.1.</span> <span class="toc-text">访问私有方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#访问私有变量"><span class="toc-number">2.2.</span> <span class="toc-text">访问私有变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改私有常量"><span class="toc-number">2.3.</span> <span class="toc-text">修改私有常量</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#方法一"><span class="toc-number">2.3.1.</span> <span class="toc-text">方法一</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#方法二"><span class="toc-number">2.3.2.</span> <span class="toc-text">方法二</span></a></li></ol></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/02/12/2017-02-12-Understand-jni-part2/" class="archive-article-date">
-  	<time datetime="2017-02-12T02:44:57.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/12/2017-02-12-Understand-jni-part2/">Android与JNI（二）数据类型映射、描述符说明</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/NDK//" class="article-tag-list-link color4">NDK</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/02/05/2017-02-05-Understand-jni-part1/" class="archive-article-date">
-  	<time datetime="2017-02-05T14:21:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-05</time>
-</a>
-        </div>
-    	 
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/02/05/2017-02-05-Understand-jni-part1/">Android与JNI（一）实现动态注册</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/NDK//" class="article-tag-list-link color4">NDK</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -523,10 +402,10 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
 		root: "/",
