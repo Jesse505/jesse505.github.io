@@ -252,6 +252,106 @@
 
 
   
+    <article id="post-2018-03-12-Android-Dynamic-proxy" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/12/2018-03-12-Android-Dynamic-proxy/">静态代理与动态代理的区别和使用场景</a>
+    </h1>
+  
+
+        
+        <a href="/2018/03/12/2018-03-12-Android-Dynamic-proxy/" class="archive-article-date">
+  	<time datetime="2018-03-12T13:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在讲解静态代理与动态代理的区别之前，我们先来回顾代理模式相关的知识点，往下看。</p>
+<h2 id="代理模式的定义"><a href="#代理模式的定义" class="headerlink" title="代理模式的定义"></a>代理模式的定义</h2><blockquote>
+<p>为其他对象提供一种代理以控制对这个对象的访问。</p>
+</blockquote>
+<p>说白了，我们可以理解为生活中常见的中介或者明星经纪人，我们买房一般都会通过中介，但是最后卖房的却是开发商，可以认为中介就是开发商的代理。</p>
+<h2 id="代理模式的使用场景"><a href="#代理模式的使用场景" class="headerlink" title="代理模式的使用场景"></a>代理模式的使用场景</h2><blockquote>
+<p>当不能访问或不想直接访问或访问某个对象存在困难时，我们可以通过一个代理对象来间接访问，为了客户端使用的透明性，我们应该保证代理对象和被代理对象应该实现同一个接口。</p>
+</blockquote>
+<h2 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h2><p>理论知识讲了一堆，有点绕口，我们直接讲静态代理吧，我们以买房为例定义接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Buy</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">buyHouse</span><span class="params">(<span class="keyword">long</span> money)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2018/03/12/2018-03-12-Android-Dynamic-proxy/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">设计模式</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android/设计模式//" class="article-tag-list-link color5">设计模式</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/03/12/2018-03-12-Android-Dynamic-proxy/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-2018-03-04-Java-reflect-01" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -993,95 +1093,6 @@
 
 
   
-    <article id="post-2017-01-07-arith-sort-part3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/01/07/2017-01-07-arith-sort-part3/">图解排序算法（三）之堆排序</a>
-    </h1>
-  
-
-        
-        <a href="/2017/01/07/2017-01-07-arith-sort-part3/" class="archive-article-date">
-  	<time datetime="2017-01-07T14:30:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-01-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h3><h5 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h5><p>堆排序是利用堆这种数据结构而设计的一种排序算法，堆排序是对直接选择排序的改进，<strong>它的最坏，最好，平均时间复杂度均为O(nlogn)，它也是不稳定排序，不适合待排序序列较少的情况</strong>。首先简单了解下堆结构。</p>
-<h5 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h5><p><strong>堆是具有以下性质的完全二叉树：每个结点的值都大于或等于其左右孩子结点的值，称为大顶堆；或者每个结点的值都小于或等于其左右孩子结点的值，称为小顶堆。如下图：</strong></p>
-<p><img src="/img/201701/heapSort1.png" alt="heap sort png"></p>
-        
-          <a class="article-more-a" href="/2017/01/07/2017-01-07-arith-sort-part3/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/算法//" class="article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/01/07/2017-01-07-arith-sort-part3/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1187,11 +1198,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">反射</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
