@@ -8,18 +8,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://jesse505.github.io">
-  <title>Category: 算法 | 赵一飞的博客</title>
+  <title>View的绘制流程总结 | 赵一飞的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="少壮不努力，老大撸代码">
-<meta property="og:type" content="website">
-<meta property="og:title" content="赵一飞的博客">
-<meta property="og:url" content="https://jesse505.github.io/categories/算法/index.html">
+  <meta name="description" content="一、内容概览本文是《Android开发艺术探索》第四章的读书笔记，重在总结，细节问题读者可自行查阅。 View的绘制流程是从ViewRoot的performTraversals方法开始的，它经过measure，layout，draw三个过程。其中measure用来测量View的宽和高，layout确定View在父容器中的位置，而draw则负责将View绘制到屏幕上。 二、理解MeasureSpec">
+<meta name="keywords" content="View绘制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="View的绘制流程总结">
+<meta property="og:url" content="https://jesse505.github.io/2018/12/12/2018-12-12-Android-View-draw/index.html">
 <meta property="og:site_name" content="赵一飞的博客">
-<meta property="og:description" content="少壮不努力，老大撸代码">
+<meta property="og:description" content="一、内容概览本文是《Android开发艺术探索》第四章的读书笔记，重在总结，细节问题读者可自行查阅。 View的绘制流程是从ViewRoot的performTraversals方法开始的，它经过measure，layout，draw三个过程。其中measure用来测量View的宽和高，layout确定View在父容器中的位置，而draw则负责将View绘制到屏幕上。 二、理解MeasureSpec">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-07T08:37:27.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="赵一飞的博客">
-<meta name="twitter:description" content="少壮不努力，老大撸代码">
+<meta name="twitter:title" content="View的绘制流程总结">
+<meta name="twitter:description" content="一、内容概览本文是《Android开发艺术探索》第四章的读书笔记，重在总结，细节问题读者可自行查阅。 View的绘制流程是从ViewRoot的performTraversals方法开始的，它经过measure，layout，draw三个过程。其中measure用来测量View的宽和高，layout确定View在父容器中的位置，而draw则负责将View绘制到屏幕上。 二、理解MeasureSpec">
   
     <link rel="alternative" href="/atom.xml" title="赵一飞的博客" type="application/atom+xml">
   
@@ -157,267 +159,250 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-2018-12-12-Android-View-draw" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      View的绘制流程总结
+    </h1>
+  
+
+        
+        <a href="/2018/12/12/2018-12-12-Android-View-draw/" class="archive-article-date">
+  	<time datetime="2018-12-12T13:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-12</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、内容概览"><a href="#一、内容概览" class="headerlink" title="一、内容概览"></a>一、内容概览</h2><p>本文是《Android开发艺术探索》第四章的读书笔记，重在总结，细节问题读者可自行查阅。</p>
+<p>View的绘制流程是从ViewRoot的performTraversals方法开始的，它经过measure，layout，draw三个过程。其中measure用来测量View的宽和高，layout确定View在父容器中的位置，而draw则负责将View绘制到屏幕上。</p>
+<h2 id="二、理解MeasureSpec"><a href="#二、理解MeasureSpec" class="headerlink" title="二、理解MeasureSpec"></a>二、理解MeasureSpec</h2><p>为了更好的理解View的measure过程，我们还需要理解MeasureSpec。 </p>
+<p>MeasureSpec是一个specSize和specMode信息的32位int值，其中高两位表示specMode，低30位表示specSize。specMode指测量模式，specSize指在某种测量模式下的规格大小。specMode包括： </p>
+<ul>
+<li>UNSPECIFIED</li>
+<li>EXACTLY</li>
+<li>AT_MOST</li>
+</ul>
+<a id="more"></a>
+<p>View需要MeasureSpec信息，来确定自己能显示多大。顶层View的MeasureSpec由ViewRootImpl#getRootMeasureSpec()方法获得，getRootMeasureSpec()源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getRootMeasureSpec</span><span class="params">(<span class="keyword">int</span> windowSize, <span class="keyword">int</span> rootDimension)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> measureSpec;</span><br><span class="line">        <span class="keyword">switch</span> (rootDimension) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">case</span> ViewGroup.LayoutParams.MATCH_PARENT:</span><br><span class="line">            <span class="comment">// Window can't resize. Force root view to be windowSize.</span></span><br><span class="line">            measureSpec = MeasureSpec.makeMeasureSpec(windowSize, MeasureSpec.EXACTLY);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> ViewGroup.LayoutParams.WRAP_CONTENT:</span><br><span class="line">            <span class="comment">// Window can resize. Set max size for root view.</span></span><br><span class="line">            measureSpec = MeasureSpec.makeMeasureSpec(windowSize, MeasureSpec.AT_MOST);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="comment">// Window wants to be an exact size. Force root view to be that size.</span></span><br><span class="line">            measureSpec = MeasureSpec.makeMeasureSpec(rootDimension, MeasureSpec.EXACTLY);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> measureSpec;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>子View的MeasureSpec，由父容器和其自身的LayoutParams共同决定，通过ViewGroup提供的getChildMeasureSpec()方法获得，getChildMeasureSpec()源码此处就不贴了。 </p>
+<p>这里简单说一下：</p>
+<ul>
+<li>当View采用固定宽高的时候，不管父容器的MeasureSpec是什么，View的MeasureSpec都是EXACTLY，并且其大小遵循Layoutparams重点额大小。</li>
+<li>当View的宽高是match_parent的时候，父容器的MeasureSpec是EXACTLY的话，那么View的MeasureSpec也是EXACTLY并且大小就是父容器的剩余空间；父容器的MeasureSpec是AT_MOST的话，View的MeasureSpec也是AT_MOST并且大小不会超过父容器的剩余空间；</li>
+<li>当View的宽高是wrap_content的时候，不管父容器的MeasureSpec是EXACTLY还是AT_MOST，View的MeasureSpec都是AT_MOST并且大小不会超过父容器的剩余大小。</li>
+</ul>
+<h2 id="三、measure过程"><a href="#三、measure过程" class="headerlink" title="三、measure过程"></a>三、measure过程</h2><h3 id="View的measure过程"><a href="#View的measure过程" class="headerlink" title="View的measure过程"></a>View的measure过程</h3><p>父容器调用子View的measure方法把上一步获得的MeasureSpec信息传递过去，子View的measure方法调用View#onMeasure()，onMeasure调用setMeasuredDimension()设置自身大小。View的onMeasure()方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onMeasure</span><span class="params">(<span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightMeasureSpec)</span> </span>&#123;</span><br><span class="line">    setMeasuredDimension(getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec),</span><br><span class="line">            getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>setMeasuredDimension方法会设置View的宽高，getSuggestedMinimumHeight(),getSuggestedMinimumWidth()源码也很简单，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">getSuggestedMinimumHeight</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (mBackground == <span class="keyword">null</span>) ? mMinHeight : max(mMinHeight, mBackground.getMinimumHeight());</span><br><span class="line">    &#125;</span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">getSuggestedMinimumWidth</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (mBackground == <span class="keyword">null</span>) ? mMinWidth : max(mMinWidth, mBackground.getMinimumWidth());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>我们主要看getDefaultSize()方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getDefaultSize</span><span class="params">(<span class="keyword">int</span> size, <span class="keyword">int</span> measureSpec)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> result = size;</span><br><span class="line">    <span class="keyword">int</span> specMode = MeasureSpec.getMode(measureSpec);</span><br><span class="line">    <span class="keyword">int</span> specSize = MeasureSpec.getSize(measureSpec);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (specMode) &#123;</span><br><span class="line">    <span class="keyword">case</span> MeasureSpec.UNSPECIFIED:</span><br><span class="line">        result = size;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> MeasureSpec.AT_MOST:</span><br><span class="line">    <span class="keyword">case</span> MeasureSpec.EXACTLY:</span><br><span class="line">        result = specSize;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由前面的分析可知，当View的宽高属性为wrap_content时，其父View通过getChildMeasureSpec方法确定的其测量模式为AT_MOST。再由getDefaultSize()可知，其最终的宽高会被设置为specSize，即父View所剩空间的大小，这也就是为什么自定义View不对AT_MOST模式做处理，其wrap_content和match_parent效果一样。</p>
+<h3 id="ViewGroup的Measure过程"><a href="#ViewGroup的Measure过程" class="headerlink" title="ViewGroup的Measure过程"></a>ViewGroup的Measure过程</h3><p>ViewGroup的measure()和onMeasure()方法是从View继承过来的，没有做任何重写（measure方法是final限定，不能重写）。其onMeasure()方法由各个子类各自重写，实现自己的需求。ViewGroup的子类在onMeasure()中做的事其实都差不多:</p>
+<ol>
+<li>遍历子View</li>
+<li>调用measureChild*让子View确定自己的大小</li>
+<li>根据所有子View的大小确定自己的大小</li>
+</ol>
+<p>2步骤中*是个通配符，意思是measureChild一类的方法，如measureChildHorizontal，measureChildWithMargins。这些方法内部会调用getChildMeasureSpec确定子View的测量模式，会调用child.measure(childWidthMeasureSpec, childHeightMeasureSpec)触发子View的测量。</p>
+<h2 id="四、layout过程"><a href="#四、layout过程" class="headerlink" title="四、layout过程"></a>四、layout过程</h2><p>View源码中，layout方法中会先调用setFrame给自身的left，top，right，bottom属性赋值,至此自己在父View中的位置就确定了。然后会调用onLayout方法，该方法在View中是一个空实现，具体的实现由其子View（一般指ViewGroup）实现，如LinearLayout。</p>
+<h2 id="五、draw过程"><a href="#五、draw过程" class="headerlink" title="五、draw过程"></a>五、draw过程</h2><p>draw的过程相对简单，直接看源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">final</span> <span class="keyword">int</span> privateFlags = mPrivateFlags;</span><br><span class="line">       <span class="keyword">final</span> <span class="keyword">boolean</span> dirtyOpaque = (privateFlags &amp; PFLAG_DIRTY_MASK) == PFLAG_DIRTY_OPAQUE &amp;&amp;</span><br><span class="line">               (mAttachInfo == <span class="keyword">null</span> || !mAttachInfo.mIgnoreDirtyState);</span><br><span class="line">       mPrivateFlags = (privateFlags &amp; ~PFLAG_DIRTY_MASK) | PFLAG_DRAWN;</span><br><span class="line"></span><br><span class="line">       <span class="comment">/*</span></span><br><span class="line"><span class="comment">        * Draw traversal performs several drawing steps which must be executed</span></span><br><span class="line"><span class="comment">        * in the appropriate order:</span></span><br><span class="line"><span class="comment">        *</span></span><br><span class="line"><span class="comment">        *      1. Draw the background</span></span><br><span class="line"><span class="comment">        *      2. If necessary, save the canvas' layers to prepare for fading</span></span><br><span class="line"><span class="comment">        *      3. Draw view's content</span></span><br><span class="line"><span class="comment">        *      4. Draw children</span></span><br><span class="line"><span class="comment">        *      5. If necessary, draw the fading edges and restore layers</span></span><br><span class="line"><span class="comment">        *      6. Draw decorations (scrollbars for instance)</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line"></span><br><span class="line">       <span class="comment">// Step 1, draw the background, if needed</span></span><br><span class="line">       <span class="keyword">int</span> saveCount;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (!dirtyOpaque) &#123;</span><br><span class="line">           drawBackground(canvas);</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// skip step 2 &amp; 5 if possible (common case)</span></span><br><span class="line">       <span class="keyword">final</span> <span class="keyword">int</span> viewFlags = mViewFlags;</span><br><span class="line">       <span class="keyword">boolean</span> horizontalEdges = (viewFlags &amp; FADING_EDGE_HORIZONTAL) != <span class="number">0</span>;</span><br><span class="line">       <span class="keyword">boolean</span> verticalEdges = (viewFlags &amp; FADING_EDGE_VERTICAL) != <span class="number">0</span>;</span><br><span class="line">       <span class="keyword">if</span> (!verticalEdges &amp;&amp; !horizontalEdges) &#123;</span><br><span class="line">           <span class="comment">// Step 3, draw the content</span></span><br><span class="line">           <span class="keyword">if</span> (!dirtyOpaque) onDraw(canvas);</span><br><span class="line"></span><br><span class="line">           <span class="comment">// Step 4, draw the children</span></span><br><span class="line">           dispatchDraw(canvas);</span><br><span class="line"></span><br><span class="line">           <span class="comment">// Overlay is part of the content and draws beneath Foreground</span></span><br><span class="line">           <span class="keyword">if</span> (mOverlay != <span class="keyword">null</span> &amp;&amp; !mOverlay.isEmpty()) &#123;</span><br><span class="line">               mOverlay.getOverlayView().dispatchDraw(canvas);</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           <span class="comment">// Step 6, draw decorations (foreground, scrollbars)</span></span><br><span class="line">           onDrawForeground(canvas);</span><br><span class="line"></span><br><span class="line">           <span class="comment">// we're done...</span></span><br><span class="line">           <span class="keyword">return</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到一般情况下View的draw流程分为四步： </p>
+<ol>
+<li>绘制背景 drawBackground(canvas)</li>
+<li>绘制自己 (onDraw)</li>
+<li>绘制Children (dispatchDraw)</li>
+<li>绘制装饰 (onDrawForeground)</li>
+</ol>
+<p>其中步骤二在自定义View的时候经常需要去实现，以绘制自己想要的效果。步骤三dispatchDraw在View中是个空实现。ViewGroup实现了dispatchDraw(),其中调用了ViewGroup#drawChild方法，而drawChild()仅仅是调用了child.draw():</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">drawChild</span><span class="params">(Canvas canvas, View child, <span class="keyword">long</span> drawingTime)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> child.draw(canvas, <span class="keyword">this</span>, drawingTime);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="六、最后"><a href="#六、最后" class="headerlink" title="六、最后"></a>六、最后</h2><p>感谢Android开发艺术探索的作者</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我喝咖啡<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/alipay.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/wechatPay.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/01/09/2017-01-09-arith-sort-part5/" class="archive-article-date">
-  	<time datetime="2017-01-09T14:43:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-01-09</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/09/2017-01-09-arith-sort-part5/">图解排序算法（五）之快速排序和排序总结</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">View绘制</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/算法//" class="article-tag-list-link color3">算法</a>
+        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android/进阶//" class="article-tag-list-link color3">进阶</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2018/12/12/2018-12-12-Android-View-draw/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/01/08/2017-01-08-arith-sort-part4/" class="archive-article-date">
-  	<time datetime="2017-01-08T12:11:56.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-01-08</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/10/02/2018-10-02-Understand-Component-part1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Android组件化最佳实践</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/08/2017-01-08-arith-sort-part4/">图解排序算法（四）之归并排序</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/算法//" class="article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、内容概览"><span class="toc-number">1.</span> <span class="toc-text">一、内容概览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、理解MeasureSpec"><span class="toc-number">2.</span> <span class="toc-text">二、理解MeasureSpec</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、measure过程"><span class="toc-number">3.</span> <span class="toc-text">三、measure过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#View的measure过程"><span class="toc-number">3.1.</span> <span class="toc-text">View的measure过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ViewGroup的Measure过程"><span class="toc-number">3.2.</span> <span class="toc-text">ViewGroup的Measure过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、layout过程"><span class="toc-number">4.</span> <span class="toc-text">四、layout过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、draw过程"><span class="toc-number">5.</span> <span class="toc-text">五、draw过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六、最后"><span class="toc-number">6.</span> <span class="toc-text">六、最后</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/01/07/2017-01-07-arith-sort-part3/" class="archive-article-date">
-  	<time datetime="2017-01-07T14:30:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-01-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/07/2017-01-07-arith-sort-part3/">图解排序算法（三）之堆排序</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/算法//" class="article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/01/06/2017-01-06-arith-sort-part2/" class="archive-article-date">
-  	<time datetime="2017-01-06T14:30:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-01-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/06/2017-01-06-arith-sort-part2/">图解排序算法（二）之希尔排序</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/算法//" class="article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/01/05/2017-01-05-arith-sort-part1/" class="archive-article-date">
-  	<time datetime="2017-01-05T15:01:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-01-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/01/05/2017-01-05-arith-sort-part1/">图解排序算法（一）之冒泡，选择，直接插入排序</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/算法//" class="article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
   
-    </div></section>
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -440,10 +425,10 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
 		root: "/",
