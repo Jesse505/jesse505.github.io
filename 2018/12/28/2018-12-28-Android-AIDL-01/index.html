@@ -8,18 +8,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://jesse505.github.io">
-  <title>Tag: 组件化 | 赵一飞的博客</title>
+  <title>AIDL使用小结 | 赵一飞的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="少壮不努力，老大撸代码">
-<meta property="og:type" content="website">
-<meta property="og:title" content="赵一飞的博客">
-<meta property="og:url" content="https://jesse505.github.io/tags/组件化/index.html">
+  <meta name="description" content="一、内容概览本章内容结合《Android开发艺术探索》一书，给出自己使用AIDL的注意点和总结，主要有几下几个方面：   AIDL支持的数据结构 AIDL的单向调用-客户端调用服务端 AIDL的双向调用  二、AIDL支持的数据结构在AIDL文件中，并不是所有的数据类型都是支持的，那么支持哪些数据类型，如下所示：  基本数据类型(int,long,double,char,boolean) Stri">
+<meta name="keywords" content="AIDL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AIDL使用小结">
+<meta property="og:url" content="https://jesse505.github.io/2018/12/28/2018-12-28-Android-AIDL-01/index.html">
 <meta property="og:site_name" content="赵一飞的博客">
-<meta property="og:description" content="少壮不努力，老大撸代码">
+<meta property="og:description" content="一、内容概览本章内容结合《Android开发艺术探索》一书，给出自己使用AIDL的注意点和总结，主要有几下几个方面：   AIDL支持的数据结构 AIDL的单向调用-客户端调用服务端 AIDL的双向调用  二、AIDL支持的数据结构在AIDL文件中，并不是所有的数据类型都是支持的，那么支持哪些数据类型，如下所示：  基本数据类型(int,long,double,char,boolean) Stri">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-03-08T12:34:23.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="赵一飞的博客">
-<meta name="twitter:description" content="少壮不努力，老大撸代码">
+<meta name="twitter:title" content="AIDL使用小结">
+<meta name="twitter:description" content="一、内容概览本章内容结合《Android开发艺术探索》一书，给出自己使用AIDL的注意点和总结，主要有几下几个方面：   AIDL支持的数据结构 AIDL的单向调用-客户端调用服务端 AIDL的双向调用  二、AIDL支持的数据结构在AIDL文件中，并不是所有的数据类型都是支持的，那么支持哪些数据类型，如下所示：  基本数据类型(int,long,double,char,boolean) Stri">
   
     <link rel="alternative" href="/atom.xml" title="赵一飞的博客" type="application/atom+xml">
   
@@ -157,48 +159,116 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-2018-12-28-Android-AIDL-01" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/02/2018-10-02-Understand-Component-part1/" class="archive-article-date">
-  	<time datetime="2018-10-02T14:01:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-02</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/02/2018-10-02-Understand-Component-part1/">Android组件化最佳实践</a>
+    <h1 class="article-title" itemprop="name">
+      AIDL使用小结
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/12/28/2018-12-28-Android-AIDL-01/" class="archive-article-date">
+  	<time datetime="2018-12-28T04:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、内容概览"><a href="#一、内容概览" class="headerlink" title="一、内容概览"></a>一、内容概览</h2><p>本章内容结合《Android开发艺术探索》一书，给出自己使用AIDL的注意点和总结，主要有几下几个方面： </p>
+<ul>
+<li>AIDL支持的数据结构</li>
+<li>AIDL的单向调用-客户端调用服务端</li>
+<li>AIDL的双向调用</li>
+</ul>
+<h2 id="二、AIDL支持的数据结构"><a href="#二、AIDL支持的数据结构" class="headerlink" title="二、AIDL支持的数据结构"></a>二、AIDL支持的数据结构</h2><p>在AIDL文件中，并不是所有的数据类型都是支持的，那么支持哪些数据类型，如下所示：</p>
+<ul>
+<li>基本数据类型(int,long,double,char,boolean)</li>
+<li>String和CharSequence</li>
+<li>List:只支持ArrayList，并且里面的元素都能被AIDL支持</li>
+<li>Map:只支持HashMap，并且里面的元素都能被AIDL支持，包括key和value</li>
+<li>Parcelable:所有实现了Parcelable的对象</li>
+<li>AIDL:所有AIDL接口本身也是支持的</li>
+</ul>
+<p>其中有几个注意点：  </p>
+<ul>
+<li>自定义的Parcelable对象和AIDL对象都要显示的import进来，哪怕在同一个包内</li>
+<li>AIDL除了基本数据类型，其他类型必须加上方向：in，out，inout</li>
+<li>AIDL的包结构在服务端和客户端要保持一致</li>
+</ul>
+<a id="more"></a>
+<h2 id="三、AIDL的单向调用-客户端调用服务端"><a href="#三、AIDL的单向调用-客户端调用服务端" class="headerlink" title="三、AIDL的单向调用-客户端调用服务端"></a>三、AIDL的单向调用-客户端调用服务端</h2><h4 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h4><p>服务端新建一个service监听客户端连接，再新建AIDL文件暴露给客户端，最终在service中实现AIDL接口。</p>
+<h4 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h4><p>绑定服务，在绑定成功后将服务端返回的Binder对象转为AIDL接口对象，这样就可以调用AIDL中的接口了。</p>
+<p>这里面有几个需要注意的地方:</p>
+<ul>
+<li>自定义的Parcelable对象在AIDL文件中如果被加上方向,那她必须实现readFromParcel()方法</li>
+<li>Client调用AIDL接口的时候,会block住,因此clinet调用过程不应该在主线程</li>
+<li>AIDL接口的实现执行是在Binder线程池中,因此不应该去操作UI相关的内容</li>
+<li>如果多个客户端连接同一个服务并进行数据的操作,可能会造成数据的不同步,这个时候就应该使用CopyOnWriteArrayList和ConcurrentHashMap</li>
+</ul>
+<h2 id="四、AIDL的双向调用"><a href="#四、AIDL的双向调用" class="headerlink" title="四、AIDL的双向调用"></a>四、AIDL的双向调用</h2><p>上一节已经实现了客户端调用服务端,那么服务端调用客户端的话只需要增加一个AIDL接口,也就是所谓的观察者模式,这个时候服务端就是被观察者，客户端是观察者。当然为什么选择AIDL接口，不选择普通接口，上面章节也说过了AIDL只支持AIDL接口不支持普通接口。</p>
+<p>下面给出主要代码分析</p>
+<h4 id="新建AIDL接口"><a href="#新建AIDL接口" class="headerlink" title="新建AIDL接口"></a>新建AIDL接口</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import com.example.github.aidlserver.Book;</span><br><span class="line"></span><br><span class="line">interface IOnNewBookArrivedListener &#123;</span><br><span class="line">    void onNewBookArrived(in Book newBook);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="添加注册和注销方法"><a href="#添加注册和注销方法" class="headerlink" title="添加注册和注销方法"></a>添加注册和注销方法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import com.example.github.aidlserver.Book;</span><br><span class="line">import com.example.github.aidlserver.IOnNewBookArrivedListener;</span><br><span class="line"></span><br><span class="line">interface BookController &#123;</span><br><span class="line"></span><br><span class="line">    void addBook(inout Book book);</span><br><span class="line"></span><br><span class="line">    List&lt;Book&gt; getBookList();</span><br><span class="line"></span><br><span class="line">    void registerListener(IOnNewBookArrivedListener listener);</span><br><span class="line"></span><br><span class="line">    void unRegisterListener(IOnNewBookArrivedListener listener);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="服务端实现"><a href="#服务端实现" class="headerlink" title="服务端实现"></a>服务端实现</h4><p>通过RemoteCallbackList保存客户端传过来的Listener对象，调用Listener对象中的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">int</span> N = mListeners.beginBroadcast();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; N; i++) &#123;</span><br><span class="line">    IOnNewBookArrivedListener listener = mListeners.getBroadcastItem(i);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> != listener) &#123;</span><br><span class="line">        listener.onNewBookArrived(newBook);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">mListeners.finishBroadcast();</span><br></pre></td></tr></table></figure>
+<h4 id="客户端实现"><a href="#客户端实现" class="headerlink" title="客户端实现"></a>客户端实现</h4><p>新建一个Listener对象并传给服务端：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">IOnNewBookArrivedListener mOnNewBookArrivedListener = <span class="keyword">new</span> IOnNewBookArrivedListener.Stub() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onNewBookArrived</span><span class="params">(Book newBook)</span> <span class="keyword">throws</span> RemoteException </span>&#123;</span><br><span class="line">            <span class="comment">//注意这里不能执行UI相关的工作,需要通过handler发送出去</span></span><br><span class="line">            Log.i(TAG, <span class="string">"来了新书:"</span> + newBook.getName());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我喝咖啡<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/alipay.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/wechatPay.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">组件化</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">AIDL</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -208,24 +278,124 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="/categories/Android/组件化//" class="article-tag-list-link color4">组件化</a>
+        			<a href="/categories/Android/进阶//" class="article-tag-list-link color3">进阶</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2018/12/28/2018-12-28-Android-AIDL-01/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2018/12/22/2018-12-22-Android-binder/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Binder原理</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、内容概览"><span class="toc-number">1.</span> <span class="toc-text">一、内容概览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、AIDL支持的数据结构"><span class="toc-number">2.</span> <span class="toc-text">二、AIDL支持的数据结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、AIDL的单向调用-客户端调用服务端"><span class="toc-number">3.</span> <span class="toc-text">三、AIDL的单向调用-客户端调用服务端</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#服务端"><span class="toc-number">3.0.1.</span> <span class="toc-text">服务端</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#客户端"><span class="toc-number">3.0.2.</span> <span class="toc-text">客户端</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、AIDL的双向调用"><span class="toc-number">4.</span> <span class="toc-text">四、AIDL的双向调用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#新建AIDL接口"><span class="toc-number">4.0.1.</span> <span class="toc-text">新建AIDL接口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#添加注册和注销方法"><span class="toc-number">4.0.2.</span> <span class="toc-text">添加注册和注销方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#服务端实现"><span class="toc-number">4.0.3.</span> <span class="toc-text">服务端实现</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#客户端实现"><span class="toc-number">4.0.4.</span> <span class="toc-text">客户端实现</span></a></li></ol></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -248,9 +418,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
