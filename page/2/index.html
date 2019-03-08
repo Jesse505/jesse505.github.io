@@ -159,6 +159,100 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-2017-02-05-Understand-jni-part1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/02/05/2017-02-05-Understand-jni-part1/">Android与JNI（一）实现动态注册</a>
+    </h1>
+  
+
+        
+        <a href="/2017/02/05/2017-02-05-Understand-jni-part1/" class="archive-article-date">
+  	<time datetime="2017-02-05T14:21:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h3><p>Android Studio对JNI的开发是越来越友好了，给Google老大哥大大的赞，AS升级到2.2以后就能通过CMake编译，十分方便，具体可参考官方网站<a href="https://developer.android.com/studio/projects/add-native-code" target="_blank" rel="noopener">https://developer.android.com/studio/projects/add-native-code</a>，至于JNI编译的其他方式，比如ndk-build，可参考这个<a href="https://blog.csdn.net/mabeijianxi/article/details/68525164" target="_blank" rel="noopener">哥们的文章</a>。好了说了这么多，并没有讲到今天文章的重点，哈哈，我们现在开始啦。<br>静态注册, 每个 class 都需要使用 javah 生成一个头文件，并且生成的名字很长书写不便；初次调用时需要依据名字搜索对应的JNI层函数来建立关联关系，会影响运行效率。所以这时候动态注册就登场了。</p>
+<h3 id="动态注册"><a href="#动态注册" class="headerlink" title="动态注册"></a>动态注册</h3><h4 id="一-入口函数"><a href="#一-入口函数" class="headerlink" title="一.入口函数"></a>一.入口函数</h4><p>System.loadLibrary加载完 JNI 动态库之后，调用JNI_OnLoad函数，开始动态注册。这里就是登记注册的地方。注意：一个.so只能存在一个onload方法。</p>
+<h4 id="二-登记本地方法"><a href="#二-登记本地方法" class="headerlink" title="二.登记本地方法"></a>二.登记本地方法</h4><p>登记本地方法，作用是将 c/c++ 的函数映射到 JAVA 中，而在这里面起到关键作用的是结构体 JNINativeMethod 。他再jni.h文件中</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span> </span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* name; <span class="comment">//Java中函数的名字</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* signature; <span class="comment">//描述了函数的参数和返回值</span></span><br><span class="line">    <span class="keyword">void</span>* fnPtr; <span class="comment">//函数指针，指向我们调用别人家c++的封装 JNI 函数方法</span></span><br><span class="line">&#125; JNINativeMethod;</span><br></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2017/02/05/2017-02-05-Understand-jni-part1/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android/NDK//" class="article-tag-list-link color4">NDK</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/02/05/2017-02-05-Understand-jni-part1/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-2017-01-09-arith-sort-part5" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -715,15 +809,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Websocket</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
               </li>
              
               <li class="article-tag-list-item">

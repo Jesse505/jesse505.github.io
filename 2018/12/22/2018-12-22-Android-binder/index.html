@@ -8,19 +8,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://jesse505.github.io">
-  <title>文章分类 | 赵一飞的博客</title>
+  <title>Binder原理 | 赵一飞的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="少壮不努力，老大撸代码">
-<meta property="og:type" content="website">
-<meta property="og:title" content="文章分类">
-<meta property="og:url" content="https://jesse505.github.io/categories/index.html">
+  <meta name="description" content="一、内容概览Binder作为Android重点和难点，是Android进阶必备的。网上搜集了一些图文讲解，在配合自己的理解，特此记录。由于有的图片已经找不到出处，有什么问题可以联系我。主要从以下几个方面入手：  为什么使用Binder? IPC原理 Binder原理 Binder运行机制  二、为什么使用Binder?性能方面 在移动设备上（性能受限制的设备，比如要省电），广泛地使用跨进程通信对通">
+<meta name="keywords" content="Binder">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Binder原理">
+<meta property="og:url" content="https://jesse505.github.io/2018/12/22/2018-12-22-Android-binder/index.html">
 <meta property="og:site_name" content="赵一飞的博客">
-<meta property="og:description" content="少壮不努力，老大撸代码">
+<meta property="og:description" content="一、内容概览Binder作为Android重点和难点，是Android进阶必备的。网上搜集了一些图文讲解，在配合自己的理解，特此记录。由于有的图片已经找不到出处，有什么问题可以联系我。主要从以下几个方面入手：  为什么使用Binder? IPC原理 Binder原理 Binder运行机制  二、为什么使用Binder?性能方面 在移动设备上（性能受限制的设备，比如要省电），广泛地使用跨进程通信对通">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-01-21T03:24:23.000Z">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3985563-a3722ee387793114.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3985563-5ff2c4816543c433.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/3985563-727dd63017d2113b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2019-03-08T04:44:37.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="文章分类">
-<meta name="twitter:description" content="少壮不努力，老大撸代码">
+<meta name="twitter:title" content="Binder原理">
+<meta name="twitter:description" content="一、内容概览Binder作为Android重点和难点，是Android进阶必备的。网上搜集了一些图文讲解，在配合自己的理解，特此记录。由于有的图片已经找不到出处，有什么问题可以联系我。主要从以下几个方面入手：  为什么使用Binder? IPC原理 Binder原理 Binder运行机制  二、为什么使用Binder?性能方面 在移动设备上（性能受限制的设备，比如要省电），广泛地使用跨进程通信对通">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/3985563-a3722ee387793114.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
   
     <link rel="alternative" href="/atom.xml" title="赵一飞的博客" type="application/atom+xml">
   
@@ -158,20 +163,249 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article class="article article-type-post show">
-  <header class="article-header" style="border-bottom: 1px solid #ccc">
-  <h1 class="article-title" itemprop="name">
-    文章分类
-  </h1>
-  </header>
+            <article id="post-2018-12-22-Android-binder" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Binder原理
+    </h1>
+  
+
+        
+        <a href="/2018/12/22/2018-12-22-Android-binder/" class="archive-article-date">
+  	<time datetime="2018-12-22T12:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、内容概览"><a href="#一、内容概览" class="headerlink" title="一、内容概览"></a>一、内容概览</h2><p>Binder作为Android重点和难点，是Android进阶必备的。网上搜集了一些图文讲解，在配合自己的理解，特此记录。由于有的图片已经找不到出处，有什么问题可以联系我。主要从以下几个方面入手：</p>
+<ul>
+<li>为什么使用Binder?</li>
+<li>IPC原理</li>
+<li>Binder原理</li>
+<li>Binder运行机制</li>
+</ul>
+<h2 id="二、为什么使用Binder"><a href="#二、为什么使用Binder" class="headerlink" title="二、为什么使用Binder?"></a>二、为什么使用Binder?</h2><p><strong>性能方面</strong></p>
+<p>在移动设备上（性能受限制的设备，比如要省电），广泛地使用跨进程通信对通信机制的性能有严格的要求，Binder相对于传统的Socket方式，更加高效。<strong>Binder数据拷贝只需要一次，而管道、消息队列、Socket都需要2次，共享内存方式一次内存拷贝都不需要，但实现方式又比较复杂。</strong></p>
+<p><strong>安全方面</strong></p>
+<p>传统的进程通信方式对于通信双方的身份并没有做出严格的验证，比如Socket通信的IP地址是客户端手动填入，很容易进行伪造。然而，Binder机制从协议本身就支持对通信双方做身份校检，从而大大提升了安全性。</p>
+<a id="more"></a>
+<h2 id="三、IPC原理"><a href="#三、IPC原理" class="headerlink" title="三、IPC原理"></a>三、IPC原理</h2><p>从进程角度来看IPC（Interprocess Communication）机制</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3985563-a3722ee387793114.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p>每个Android的进程，只能运行在自己进程所拥有的虚拟地址空间。例如，对应一个4GB的虚拟地址空间，其中3GB是用户空间，1GB是内核空间。当然内核空间的大小是可以通过参数配置调整的。对于用户空间，不同进程之间是不能共享的，而内核空间却是可共享的。Client进程向Server进程通信，恰恰是利用进程间可共享的内核内存空间来完成底层通信工作的。Client端与Server端进程往往采用ioctl等方法与内核空间的驱动进行交互。</p>
+<h2 id="四、Binder原理"><a href="#四、Binder原理" class="headerlink" title="四、Binder原理"></a>四、Binder原理</h2><p>Binder通信采用C/S架构，从组件视角来说，包含Client、Server、ServiceManager以及Binder驱动，其中ServiceManager用于管理系统中的各种服务。架构图如下所示：</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3985563-5ff2c4816543c433.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<p><strong>Binder通信的四个角色</strong></p>
+<p><strong>Client进程</strong>：使用服务的进程。</p>
+<p><strong>Server进程</strong>：提供服务的进程。</p>
+<p><strong>ServiceManager进程</strong>：ServiceManager的作用是将字符形式的Binder名字转化成Client中对该Binder的引用，使得Client能够通过Binder名字获得对Server中Binder实体的引用。</p>
+<p><strong>Binder驱动</strong>：驱动负责进程之间Binder通信的建立，Binder在进程之间的传递，Binder引用计数管理，数据包在进程之间的传递和交互等一系列底层支持。</p>
+<h2 id="五、Binder运行机制"><a href="#五、Binder运行机制" class="headerlink" title="五、Binder运行机制"></a>五、Binder运行机制</h2><p>图中Client/Server/ServiceManage之间的相互通信都是基于Binder机制。既然基于Binder机制通信，那么同样也是C/S架构，则图中的3大步骤都有相应的Client端与Server端。</p>
+<p><strong>注册服务(addService)</strong>：Server进程要先注册Service到ServiceManager。该过程：Server是客户端，ServiceManager是服务端。</p>
+<p><strong>获取服务(getService)</strong>：Client进程使用某个Service前，须先向ServiceManager中获取相应的Service。该过程：Client是客户端，ServiceManager是服务端。</p>
+<p><strong>使用服务</strong>：Client根据得到的Service信息建立与Service所在的Server进程通信的通路，然后就可以直接与Service交互。该过程：Client是客户端，Server是服务端。</p>
+<p>图中的Client，Server，Service Manager之间交互都是虚线表示，是由于它们彼此之间不是直接交互的，而是都通过与Binder驱动进行交互的，从而实现IPC通信（Interprocess Communication）方式。其中Binder驱动位于内核空间，Client，Server，Service Manager位于用户空间。Binder驱动和Service Manager可以看做是Android平台的基础架构，而Client和Server是Android的应用层，开发人员只需自定义实现Client、Server端，借助Android的基本平台架构便可以直接进行IPC通信。</p>
+<p><strong>Binder运行的实例解释</strong></p>
+<p>首先我们看看我们的程序跨进程调用系统服务的简单示例，实现浮动窗口部分代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取WindowManager服务引用</span></span><br><span class="line">WindowManager wm = (WindowManager) getSystemService(getApplication().WINDOW_SERVICE);</span><br><span class="line"><span class="comment">//布局参数layoutParams相关设置略...</span></span><br><span class="line">View view = LayoutInflater.from(getApplication()).inflate(R.layout.float_layout, <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">//添加view</span></span><br><span class="line">wm.addView(view, layoutParams);</span><br></pre></td></tr></table></figure>
+<p><strong>注册服务(addService)：</strong> 在Android开机启动过程中，Android会初始化系统的各种Service，并将这些Service向ServiceManager注册（即让ServiceManager管理）。这一步是系统自动完成的。</p>
+<p><strong>获取服务(getService)：</strong> 客户端想要得到具体的Service直接向ServiceManager要即可。客户端首先向ServiceManager查询得到具体的Service引用，通常是Service引用的代理对象，对数据进行一些处理操作。即第2行代码中，得到的wm是WindowManager对象的引用。</p>
+<p><strong>使用服务：</strong> 通过这个引用向具体的服务端发送请求，服务端执行完成后就返回。即第6行调用WindowManager的addView函数，将触发远程调用，调用的是运行在systemServer进程中的WindowManager的addView函数。</p>
+<p><strong>使用服务的具体执行过程</strong></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3985563-727dd63017d2113b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="img"></p>
+<ol>
+<li>Client通过获得一个Server的代理接口，对Server进行调用。</li>
+<li>代理接口中定义的方法与Server中定义的方法是一一对应的。</li>
+<li>Client调用某个代理接口中的方法时，代理接口的方法会将Client传递的参数打包成Parcel对象。</li>
+<li>代理接口将Parcel发送给内核中的Binder Driver。</li>
+<li>Server会读取Binder Driver中的请求数据，如果是发送给自己的，解包Parcel对象，处理并将结果返回。</li>
+<li>整个的调用过程是一个同步过程，在Server处理的时候，Client会Block住。<strong>因此Client调用过程不应在主线程。</strong></li>
+</ol>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我喝咖啡<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/alipay.jpg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/wechatPay.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Binder</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android/进阶//" class="article-tag-list-link color3">进阶</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2018/12/22/2018-12-22-Android-binder/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
 
   
-  <div class="category-all-page">
-    <h2>共计&nbsp;11&nbsp;个分类</h2>
-    <ul class="category-list-item-list"><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/Android/">Android</a><span class="category-list-item-list-count">9</span><ul class="category-list-item-list-child"><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/Android/NDK/">NDK</a><span class="category-list-item-list-count">4</span></li><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/Android/开源框架/">开源框架</a><span class="category-list-item-list-count">1</span></li><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/Android/组件化/">组件化</a><span class="category-list-item-list-count">1</span></li><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/Android/设计模式/">设计模式</a><span class="category-list-item-list-count">1</span></li><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/Android/进阶/">进阶</a><span class="category-list-item-list-count">2</span></li></ul></li><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/Java/">Java</a><span class="category-list-item-list-count">1</span><ul class="category-list-item-list-child"><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/Java/进阶/">进阶</a><span class="category-list-item-list-count">1</span></li></ul></li><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/算法/">算法</a><span class="category-list-item-list-count">5</span></li><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/网络/">网络</a><span class="category-list-item-list-count">1</span><ul class="category-list-item-list-child"><li class="category-list-item-list-item"><a class="category-list-item-list-link" href="/categories/网络/WebSocket/">WebSocket</a><span class="category-list-item-list-count">1</span></li></ul></li></ul>
-  </div>
+<nav id="article-nav">
   
-</article>
+  
+    <a href="/2018/12/12/2018-12-12-Android-View-draw/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">View的绘制流程总结</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、内容概览"><span class="toc-number">1.</span> <span class="toc-text">一、内容概览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、为什么使用Binder"><span class="toc-number">2.</span> <span class="toc-text">二、为什么使用Binder?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、IPC原理"><span class="toc-number">3.</span> <span class="toc-text">三、IPC原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、Binder原理"><span class="toc-number">4.</span> <span class="toc-text">四、Binder原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、Binder运行机制"><span class="toc-number">5.</span> <span class="toc-text">五、Binder运行机制</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
+  
+
+  
+
+  
+
+  
+
+
           </div>
         </div>
       </div>
@@ -192,7 +426,7 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
