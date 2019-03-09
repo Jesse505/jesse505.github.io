@@ -159,49 +159,34 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-2018-12-28-Android-AIDL-01" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-2019-01-01-Android-LruCache" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/28/2018-12-28-Android-AIDL-01/">AIDL使用小结</a>
+      <a class="article-title" href="/2019/01/01/2019-01-01-Android-LruCache/">LRUCache原理</a>
     </h1>
   
 
         
-        <a href="/2018/12/28/2018-12-28-Android-AIDL-01/" class="archive-article-date">
-  	<time datetime="2018-12-28T04:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-28</time>
+        <a href="/2019/01/01/2019-01-01-Android-LruCache/" class="archive-article-date">
+  	<time datetime="2019-01-01T07:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-01</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="一、内容概览"><a href="#一、内容概览" class="headerlink" title="一、内容概览"></a>一、内容概览</h2><p>本章内容结合《Android开发艺术探索》一书，给出自己使用AIDL的注意点和总结，主要有几下几个方面： </p>
-<ul>
-<li>AIDL支持的数据结构</li>
-<li>AIDL的单向调用-客户端调用服务端</li>
-<li>AIDL的双向调用</li>
-</ul>
-<h2 id="二、AIDL支持的数据结构"><a href="#二、AIDL支持的数据结构" class="headerlink" title="二、AIDL支持的数据结构"></a>二、AIDL支持的数据结构</h2><p>在AIDL文件中，并不是所有的数据类型都是支持的，那么支持哪些数据类型，如下所示：</p>
-<ul>
-<li>基本数据类型(int,long,double,char,boolean)</li>
-<li>String和CharSequence</li>
-<li>List:只支持ArrayList，并且里面的元素都能被AIDL支持</li>
-<li>Map:只支持HashMap，并且里面的元素都能被AIDL支持，包括key和value</li>
-<li>Parcelable:所有实现了Parcelable的对象</li>
-<li>AIDL:所有AIDL接口本身也是支持的</li>
-</ul>
-<p>其中有几个注意点：  </p>
-<ul>
-<li>自定义的Parcelable对象和AIDL对象都要显示的import进来，哪怕在同一个包内</li>
-<li>AIDL除了基本数据类型，其他类型必须加上方向：in，out，inout</li>
-<li>AIDL的包结构在服务端和客户端要保持一致</li>
-</ul>
+        <h2 id="一、LRU算法介绍"><a href="#一、LRU算法介绍" class="headerlink" title="一、LRU算法介绍"></a>一、LRU算法介绍</h2><p>LRU是最近最少使用的算法，它的核心思想是当缓存满时，会优先淘汰那些最近最少使用的缓存对象。采用LRU算法的缓存有两种：LruCache和DisLruCache，分别用于实现内存缓存和硬盘缓存，其核心思想都是LRU缓存算法。</p>
+<p>在复习算法和数据结构的时候，我通过双向链表实现了一个LRU缓存淘汰算法，<a href="https://github.com/Jesse505/algo/blob/master/day04/LRUCache.java" target="_blank" rel="noopener">有兴趣的请点击</a></p>
+<h2 id="二、LruCache的介绍"><a href="#二、LruCache的介绍" class="headerlink" title="二、LruCache的介绍"></a>二、LruCache的介绍</h2><p>LruCache是Android 3.1所提供的一个缓存类，所以在Android中可以直接使用LruCache实现内存缓存。而DisLruCache目前在Android 还不是Android SDK的一部分，但Android官方文档推荐使用该算法来实现硬盘缓存。</p>
+<p>LruCache是个泛型类，主要算法原理是把最近使用的对象用强引用（即我们平常使用的对象引用方式）存储在 LinkedHashMap 中。当缓存满时，把最近最少使用的对象从内存中移除，并提供了get和put方法来完成缓存的获取和添加操作。</p>
+<h2 id="三、LruCache的实现原理"><a href="#三、LruCache的实现原理" class="headerlink" title="三、LruCache的实现原理"></a>三、LruCache的实现原理</h2><p>LruCache的核心思想很好理解，就是要维护一个缓存对象列表，其中对象列表的排列方式是按照访问顺序实现的，即一直没访问的对象，将放在队尾，即将被淘汰。而最近访问的对象将放在队头，最后被淘汰。</p>
+<p>那么这个列表到底是由谁来维护的，前面已经介绍了是由LinkedHashMap来维护。为什么呢？</p>
         
-          <a class="article-more-a" href="/2018/12/28/2018-12-28-Android-AIDL-01/#more">more >></a>
+          <a class="article-more-a" href="/2019/01/01/2019-01-01-Android-LruCache/#more">more >></a>
         
       
 
@@ -215,7 +200,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">AIDL</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LRU</a>
         		</li>
       		
 		</ul>
@@ -231,7 +216,7 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="/categories/Android/进阶//" class="article-tag-list-link color3">进阶</a>
+        			<a href="/categories/Android/基础//" class="article-tag-list-link color3">基础</a>
         		</li>
       		
 		</ul>
@@ -240,7 +225,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/28/2018-12-28-Android-AIDL-01/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/01/01/2019-01-01-Android-LruCache/">展开全文 >></a>
         </p>
       
 
@@ -953,6 +938,117 @@
 
 
   
+    <article id="post-2017-12-28-Android-AIDL-01" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/12/28/2017-12-28-Android-AIDL-01/">AIDL使用小结</a>
+    </h1>
+  
+
+        
+        <a href="/2017/12/28/2017-12-28-Android-AIDL-01/" class="archive-article-date">
+  	<time datetime="2017-12-28T04:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、内容概览"><a href="#一、内容概览" class="headerlink" title="一、内容概览"></a>一、内容概览</h2><p>本章内容结合《Android开发艺术探索》一书，给出自己使用AIDL的注意点和总结，主要有几下几个方面： </p>
+<ul>
+<li>AIDL支持的数据结构</li>
+<li>AIDL的单向调用-客户端调用服务端</li>
+<li>AIDL的双向调用</li>
+</ul>
+<h2 id="二、AIDL支持的数据结构"><a href="#二、AIDL支持的数据结构" class="headerlink" title="二、AIDL支持的数据结构"></a>二、AIDL支持的数据结构</h2><p>在AIDL文件中，并不是所有的数据类型都是支持的，那么支持哪些数据类型，如下所示：</p>
+<ul>
+<li>基本数据类型(int,long,double,char,boolean)</li>
+<li>String和CharSequence</li>
+<li>List:只支持ArrayList，并且里面的元素都能被AIDL支持</li>
+<li>Map:只支持HashMap，并且里面的元素都能被AIDL支持，包括key和value</li>
+<li>Parcelable:所有实现了Parcelable的对象</li>
+<li>AIDL:所有AIDL接口本身也是支持的</li>
+</ul>
+<p>其中有几个注意点：  </p>
+<ul>
+<li>自定义的Parcelable对象和AIDL对象都要显示的import进来，哪怕在同一个包内</li>
+<li>AIDL除了基本数据类型，其他类型必须加上方向：in，out，inout</li>
+<li>AIDL的包结构在服务端和客户端要保持一致</li>
+</ul>
+        
+          <a class="article-more-a" href="/2017/12/28/2017-12-28-Android-AIDL-01/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">AIDL</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android/基础//" class="article-tag-list-link color3">基础</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/12/28/2017-12-28-Android-AIDL-01/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-2017-02-28-Understand-jni-part4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1021,101 +1117,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2017/02/28/2017-02-28-Understand-jni-part4/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-2017-02-25-Understand-jni-part3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/02/25/2017-02-25-Understand-jni-part3/">Android与JNI（三）复杂对象的传递</a>
-    </h1>
-  
-
-        
-        <a href="/2017/02/25/2017-02-25-Understand-jni-part3/" class="archive-article-date">
-  	<time datetime="2017-02-25T14:40:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-25</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>关于JNI方面的代码实例讲解太少了，所以我决定自己整理一份，这篇文章我们主要讲讲Android Java层与Native层之间复杂对象传递的主要场景，主要分为：   </p>
-<ol>
-<li>Java层向Native层传递</li>
-<li>Native层向Java层传递</li>
-</ol>
-        
-          <a class="article-more-a" href="/2017/02/25/2017-02-25-Understand-jni-part3/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/NDK//" class="article-tag-list-link color4">NDK</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/02/25/2017-02-25-Understand-jni-part3/">展开全文 >></a>
         </p>
       
 
@@ -1250,11 +1251,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">反射</a>
+                <a href="javascript:void(0)" class="js-tag color5">AIDL</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">反射</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1266,15 +1271,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">AIDL</a>
+                <a href="javascript:void(0)" class="js-tag color4">LRU</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
               </li>
              
               <li class="article-tag-list-item">

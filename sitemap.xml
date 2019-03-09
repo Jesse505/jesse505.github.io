@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://jesse505.github.io/2018/12/28/2018-12-28-Android-AIDL-01/</loc>
+    <loc>https://jesse505.github.io/2019/01/01/2019-01-01-Android-LruCache/</loc>
     
-    <lastmod>2019-03-08T12:34:23.000Z</lastmod>
+    <lastmod>2019-03-09T08:42:47.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://jesse505.github.io/2017/12/28/2017-12-28-Android-AIDL-01/</loc>
+    
+    <lastmod>2019-03-09T07:50:09.000Z</lastmod>
     
   </url>
   
