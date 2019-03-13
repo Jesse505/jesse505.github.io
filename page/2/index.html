@@ -159,6 +159,214 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-2017-12-28-Android-AIDL-01" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/12/28/2017-12-28-Android-AIDL-01/">AIDL使用小结</a>
+    </h1>
+  
+
+        
+        <a href="/2017/12/28/2017-12-28-Android-AIDL-01/" class="archive-article-date">
+  	<time datetime="2017-12-28T04:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、内容概览"><a href="#一、内容概览" class="headerlink" title="一、内容概览"></a>一、内容概览</h2><p>本章内容结合《Android开发艺术探索》一书，给出自己使用AIDL的注意点和总结，主要有几下几个方面： </p>
+<ul>
+<li>AIDL支持的数据结构</li>
+<li>AIDL的单向调用-客户端调用服务端</li>
+<li>AIDL的双向调用</li>
+</ul>
+<h2 id="二、AIDL支持的数据结构"><a href="#二、AIDL支持的数据结构" class="headerlink" title="二、AIDL支持的数据结构"></a>二、AIDL支持的数据结构</h2><p>在AIDL文件中，并不是所有的数据类型都是支持的，那么支持哪些数据类型，如下所示：</p>
+<ul>
+<li>基本数据类型(int,long,double,char,boolean)</li>
+<li>String和CharSequence</li>
+<li>List:只支持ArrayList，并且里面的元素都能被AIDL支持</li>
+<li>Map:只支持HashMap，并且里面的元素都能被AIDL支持，包括key和value</li>
+<li>Parcelable:所有实现了Parcelable的对象</li>
+<li>AIDL:所有AIDL接口本身也是支持的</li>
+</ul>
+<p>其中有几个注意点：  </p>
+<ul>
+<li>自定义的Parcelable对象和AIDL对象都要显示的import进来，哪怕在同一个包内</li>
+<li>AIDL除了基本数据类型，其他类型必须加上方向：in，out，inout</li>
+<li>AIDL的包结构在服务端和客户端要保持一致</li>
+</ul>
+        
+          <a class="article-more-a" href="/2017/12/28/2017-12-28-Android-AIDL-01/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">AIDL</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android/基础//" class="article-tag-list-link color3">基础</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/12/28/2017-12-28-Android-AIDL-01/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-2017-02-28-Understand-jni-part4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/02/28/2017-02-28-Understand-jni-part4/">Android与JNI（四）C操作Java</a>
+    </h1>
+  
+
+        
+        <a href="/2017/02/28/2017-02-28-Understand-jni-part4/" class="archive-article-date">
+  	<time datetime="2017-02-28T13:20:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>既然Java层通过Native方法可以调用C代码，那么其实C代码也是可以调用Java代码的，JNI封装了一系列方法来达到调用java的目的，主要有以下几种常见场景：  </p>
+<ol>
+<li>读取设置成员属性；   </li>
+<li>读取设置静态属性；  </li>
+<li>调用Java成员方法；  </li>
+<li>调用Java静态方法； </li>
+</ol>
+        
+          <a class="article-more-a" href="/2017/02/28/2017-02-28-Understand-jni-part4/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android/NDK//" class="article-tag-list-link color4">NDK</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/02/28/2017-02-28-Understand-jni-part4/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-2017-02-25-Understand-jni-part3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -996,6 +1204,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Handler</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">HandlerThread</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
               </li>
              
@@ -1004,15 +1220,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Websocket</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Websocket</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LRU</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1021,10 +1241,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">组件化</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
               </li>
             
             <div class="clearfix"></div>
