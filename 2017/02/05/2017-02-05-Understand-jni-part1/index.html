@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="赵一飞的博客">
 <meta property="og:description" content="问题背景Android Studio对JNI的开发是越来越友好了，给Google老大哥大大的赞，AS升级到2.2以后就能通过CMake编译，十分方便，具体可参考官方网站https://developer.android.com/studio/projects/add-native-code，至于JNI编译的其他方式，比如ndk-build，可参考这个哥们的文章。好了说了这么多，并没有讲到今天文章的">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-01-21T03:42:38.000Z">
+<meta property="og:updated_time" content="2019-03-22T04:19:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android与JNI（一）实现动态注册">
 <meta name="twitter:description" content="问题背景Android Studio对JNI的开发是越来越友好了，给Google老大哥大大的赞，AS升级到2.2以后就能通过CMake编译，十分方便，具体可参考官方网站https://developer.android.com/studio/projects/add-native-code，至于JNI编译的其他方式，比如ndk-build，可参考这个哥们的文章。好了说了这么多，并没有讲到今天文章的">
@@ -190,7 +190,7 @@
 <a id="more"></a>
 <p>根据这个结构体，我们可以声明一个实例</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> JNINativeMethod gMethods[] = &#123;</span><br><span class="line">        &#123; <span class="string">"stringFromJNI"</span>, <span class="string">"()Ljava/lang/String;"</span>, (<span class="keyword">void</span> *) stringFromJNI &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>参数分析：<br>“stringFromJNI”：Java 中声明的本地方法名；<br>(void *)stringFromJNI：映射对象，本地 c/c++ 函数，名字可以与 Java 中声明的本地方法名不一致。<br>“()Ljava/lang/String;”：这个应该是最难理解的，也就是结构体中的 signature 。他描述了本地方法的参数和返回值。例如<br>　　“()V”<br>　　“(II)V”<br>　　“(Ljava/lang/String;Ljava/lang/String;)V”<br>　　实际上这些字符是与函数的参数类型一一对应的。<br>　　“()” 中的字符表示参数，后面的则代表返回值。例如”()V” 就表示void Func();<br>　　“(II)V” 表示 void Func(int, int);<br>　　具体的每一个字符的对应关系如下<br>　　字符   Java类型     C类型<br>　　V      void         void<br>　　Z      jboolean     boolean<br>　　I       jint         int<br>　　J       jlong        long<br>　　D      jdouble       double<br>　　F      jfloat            float<br>　　B      jbyte            byte<br>　　C      jchar           char<br>　　S      jshort          short<br>　　数组则以”[“开始，用两个字符表示<br>　　[I     jintArray       int[]<br>　　[F     jfloatArray     float[]<br>　　[B     jbyteArray     byte[]<br>　　[C    jcharArray      char[]<br>　　[S    jshortArray      short[]<br>　　[D    jdoubleArray    double[]<br>　　[J     jlongArray      long[]<br>　　[Z    jbooleanArray    boolean[]<br>　　上面的都是基本类型，如果参数是 Java 类，则以”L”开头，以”;”结尾，中间是用”/“隔开包及类名，而其对应的 C 函数的参数则为 jobject，一个例外是 String 类，它对应的 c 类型为 jstring 。<br>　　Ljava/lang/String;     String     jstring<br>　　Ljava/net/Socket;      Socket    jobject<br>　　如果 JAVA 函数位于一个嵌入类（也被称为内部类），则用$作为类名间的分隔符，例如：”Landroid/os /FileUtils$FileStatus;”。</p>
+<p>参数分析：<br>“stringFromJNI”：Java 中声明的本地方法名；<br>(void *)stringFromJNI：映射对象，本地 c/c++ 函数，名字可以与 Java 中声明的本地方法名不一致。<br>“()Ljava/lang/String;”：这个应该是最难理解的，也就是结构体中的 signature 。他描述了本地方法的参数和返回值。例如<br>　　“()V”<br>　　“(II)V”<br>　　“(Ljava/lang/String;Ljava/lang/String;)V”<br>　　实际上这些字符是与函数的参数类型一一对应的。<br>　　“()” 中的字符表示参数，后面的则代表返回值。例如”()V” 就表示void Func();<br>　　“(II)V” 表示 void Func(int, int);<br>　　具体的每一个字符的对应关系如下<br>　　字符    Jni类型        Java类型<br>　　V      void         void<br>　　Z      jboolean     boolean<br>　　I       jint         int<br>　　J       jlong        long<br>　　D      jdouble       double<br>　　F      jfloat            float<br>　　B      jbyte            byte<br>　　C      jchar           char<br>　　S      jshort          short<br>　　数组则以”[“开始，用两个字符表示<br>　　[I     jintArray       int[]<br>　　[F     jfloatArray     float[]<br>　　[B     jbyteArray     byte[]<br>　　[C    jcharArray      char[]<br>　　[S    jshortArray      short[]<br>　　[D    jdoubleArray    double[]<br>　　[J     jlongArray      long[]<br>　　[Z    jbooleanArray    boolean[]<br>　　上面的都是基本类型，如果参数是 Java 类，则以”L”开头，以”;”结尾，中间是用”/“隔开包及类名，而其对应的jni类型则为 jobject，一个例外是 String 类，它对应的 jni 类型为 jstring。<br>　　Ljava/lang/String;     jstring    String<br>　　Ljava/net/Socket;      jobject    Socket<br>　　如果 JAVA 函数位于一个嵌入类（也被称为内部类），则用$作为类名间的分隔符，例如：”Landroid/os /FileUtils$FileStatus;”。</p>
 <p>　　最终是通过登记所有记录在 JNINativeMethod 结构体中的 JNI 本地方法，登记方法如下：  </p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 向JNI环境注册一个本地方法</span></span><br><span class="line"><span class="comment"> * @param clazz  包含本地方法的Java类</span></span><br><span class="line"><span class="comment"> * @param methods 本地方法描述数组</span></span><br><span class="line"><span class="comment"> * @param nMethods 本地方法个数</span></span><br><span class="line"><span class="comment"> * @return 成功返回0，否则注册失败</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">jint <span class="title">RegisterNatives</span><span class="params">(jclass clazz, <span class="keyword">const</span> JNINativeMethod *methods, jint nMethods)</span></span>;</span><br></pre></td></tr></table></figure>
 <p>&emsp;&emsp;使用 registerNativeMethods 方法不仅仅是为了改变那丑陋的长方法名，最重要的是可以提高效率，因为当 Java 类透过 VM 呼叫到本地函数时，通常是依靠 VM 去动态寻找动态库中的本地函数(因此它们才需要特定规则的命名格式)，如果某方法需要连续呼叫很多次，则每次都要寻找一遍，所以使用 RegisterNatives 将本地函数向 VM 进行登记，可以让其更有效率的找到函数。<br>&emsp;&emsp;registerNativeMethods 方法的另一个重要用途是，运行时动态调整本地函数与 Java 函数值之间的映射关系，只需要多次调用 registerNativeMethods 方法，并传入不同的映射表参数即可。      </p>
@@ -495,7 +495,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Kotlin</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Websocket</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -507,11 +515,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Kotlin</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Websocket</a>
+                <a href="javascript:void(0)" class="js-tag color4">LRU</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -520,10 +524,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">Binder</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">LRU</a>
               </li>
              
               <li class="article-tag-list-item">
