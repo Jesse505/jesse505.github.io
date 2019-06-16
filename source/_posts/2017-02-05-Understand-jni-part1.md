@@ -50,7 +50,7 @@ static JNINativeMethod gMethods[] = {
 　　"()" 中的字符表示参数，后面的则代表返回值。例如"()V" 就表示void Func();  
 　　"(II)V" 表示 void Func(int, int);  
 　　具体的每一个字符的对应关系如下  
-　　字符   Java类型     C类型  
+　　字符    Jni类型        Java类型  
 　　V      void         void  
 　　Z      jboolean     boolean  
 　　I       jint         int  
@@ -69,9 +69,9 @@ static JNINativeMethod gMethods[] = {
 　　[D    jdoubleArray    double[]  
 　　[J     jlongArray      long[]  
 　　[Z    jbooleanArray    boolean[]  
-　　上面的都是基本类型，如果参数是 Java 类，则以"L"开头，以";"结尾，中间是用"/"隔开包及类名，而其对应的 C 函数的参数则为 jobject，一个例外是 String 类，它对应的 c 类型为 jstring 。  
-　　Ljava/lang/String;     String     jstring  
-　　Ljava/net/Socket;      Socket    jobject  
+　　上面的都是基本类型，如果参数是 Java 类，则以"L"开头，以";"结尾，中间是用"/"隔开包及类名，而其对应的jni类型则为 jobject，一个例外是 String 类，它对应的 jni 类型为 jstring。  
+　　Ljava/lang/String;     jstring    String  
+　　Ljava/net/Socket;      jobject    Socket  
 　　如果 JAVA 函数位于一个嵌入类（也被称为内部类），则用$作为类名间的分隔符，例如："Landroid/os /FileUtils$FileStatus;"。
 
 　　最终是通过登记所有记录在 JNINativeMethod 结构体中的 JNI 本地方法，登记方法如下：  
