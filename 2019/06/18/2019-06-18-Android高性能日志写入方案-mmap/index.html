@@ -19,7 +19,7 @@
 <meta property="og:description" content="前言最近在做一个新零售的收银app，对于app稳定性要求比较高，但是难免会出现一些难以复现的问题，针对这些问题，分析日志有时候是解决问题的必要手段。下面我们主要分析下日志写入方案的实现。 遇到的坑 性能问题：一开始日志的写入就是通过标准I/O直接写文件，当有一条日志要写入的时候，首先，打开文件，然后写入日志，最后关闭文件。但是写文件是 IO 操作，随着日志量的增加，更多的IO操作，一定会造成性能瓶">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://jesse505.github.io/img/201906/mmap.jpg">
-<meta property="og:updated_time" content="2019-10-15T12:05:26.000Z">
+<meta property="og:updated_time" content="2019-10-15T12:24:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android高性能日志写入方案-mmap">
 <meta name="twitter:description" content="前言最近在做一个新零售的收银app，对于app稳定性要求比较高，但是难免会出现一些难以复现的问题，针对这些问题，分析日志有时候是解决问题的必要手段。下面我们主要分析下日志写入方案的实现。 遇到的坑 性能问题：一开始日志的写入就是通过标准I/O直接写文件，当有一条日志要写入的时候，首先，打开文件，然后写入日志，最后关闭文件。但是写文件是 IO 操作，随着日志量的增加，更多的IO操作，一定会造成性能瓶">
@@ -207,7 +207,7 @@
 <h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>在Android中可以将文件通过Java提供的<code>MappedByteBuffer</code>映射到内存，然后进行读写。（微信的<a href="https://mp.weixin.qq.com/s/cnhuEodJGIbdodh0IxNeXQ" target="_blank" rel="noopener">xlog</a>模块mmap实现是基于C++代码实现)</p>
 <p><code>MappedByteBuffer</code> 位于 Java NIO 包下，用于将文件内容映射到缓冲区，使用的即是 mmap 技术。通过 FileChannel 的 <code>map</code> 方法可以创建缓冲区。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RandomAccessFile raf = <span class="keyword">new</span> RandomAccessFile(file, <span class="string">"rw"</span>);</span><br><span class="line"><span class="comment">//position映射文件的起始位置，size映射文件的大小</span></span><br><span class="line">MappedByteBuffer buffer = raf.getChannel().map(FileChannel.MapMode.READ_WRITE, position, size);</span><br><span class="line"><span class="comment">//往缓冲区里写入字节数据</span></span><br><span class="line">buffer.put(log);</span><br></pre></td></tr></table></figure>
-<p>有一点比较坑，Java 虽然提供了 map 方法，但是并没有提供 <code>unmap</code> 方法，通过 Google 得知 <code>unmap</code> 方法是有的，不过是私有的，我们可以通过反射调用获取<code>unmap</code>方法，在写满</p>
+<p>有一点比较坑，Java 虽然提供了 map 方法，但是并没有提供 <code>unmap</code> 方法，通过 Google 得知 <code>unmap</code> 方法是有的，不过是私有的，我们可以通过反射调用获取<code>unmap</code>方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 解除内存与文件的映射</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">unmap</span><span class="params">(MappedByteBuffer mbbi)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mbbi == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Class&lt;?&gt; clazz = Class.forName(<span class="string">"sun.nio.ch.FileChannelImpl"</span>);</span><br><span class="line">        Method m = clazz.getDeclaredMethod(<span class="string">"unmap"</span>, MappedByteBuffer.class);</span><br><span class="line">        m.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        m.invoke(<span class="keyword">null</span>, mbbi);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在这里记录一个点，刚开始在写入文件的时候，我是使用mmap将日志直接写入文件，这样的话需要通过代码去实现动态扩容，挺麻烦的，后来发现xlog是将日志写入高速缓冲区，这块高速缓冲区是使用mmap映射出来的内存区，被映射的磁盘文件是它新建的一个缓存文件，当高速缓冲区内容写到一定阈值时，通知后台线程将缓冲区的内容写入文件。借鉴xlog的方案，后面我们也改为<strong>先写入缓存中，当写满了之后，再flush到目标文件，也可以手动调用flush，将缓存刷新到目标文件</strong>。</p>
 <p>至于微信为什么这么做，肯定也是出于性能的原因啦，具体的可参考<a href="https://zhuanlan.zhihu.com/p/25011775" target="_blank" rel="noopener">微信跨平台组件mars-xlog架构分析及迁移思路</a></p>
@@ -523,7 +523,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+                <a href="javascript:void(0)" class="js-tag color4">组件化</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -531,15 +531,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">mmap</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LRU</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">组件化</a>
+                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">mmap</a>
               </li>
             
             <div class="clearfix"></div>
