@@ -86,9 +86,7 @@
 		<nav class="header-nav">
 			<div class="social">
 				
-					<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
-		        
-					<a class="weixin" target="_blank" href="/18506281505" title="weixin"><i class="icon-weixin"></i></a>
+					<a class="github" target="_blank" href="https://github.com/Jesse505" title="github"><i class="icon-github"></i></a>
 		        
 					<a class="mail" target="_blank" href="mailto:zhaoyifei505@gmail.com" title="mail"><i class="icon-mail"></i></a>
 		        
@@ -129,9 +127,7 @@
 			<nav class="header-nav">
 				<div class="social">
 					
-						<a class="github" target="_blank" href="#" title="github"><i class="icon-github"></i></a>
-			        
-						<a class="weixin" target="_blank" href="/18506281505" title="weixin"><i class="icon-weixin"></i></a>
+						<a class="github" target="_blank" href="https://github.com/Jesse505" title="github"><i class="icon-github"></i></a>
 			        
 						<a class="mail" target="_blank" href="mailto:zhaoyifei505@gmail.com" title="mail"><i class="icon-mail"></i></a>
 			        
@@ -162,6 +158,102 @@
           </div>
           <div id="js-content" class="content-ll">
             
+  
+    <article id="post-2019-06-18-Android高性能日志写入方案-mmap" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/18/2019-06-18-Android高性能日志写入方案-mmap/">Android高性能日志写入方案-mmap</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/18/2019-06-18-Android高性能日志写入方案-mmap/" class="archive-article-date">
+  	<time datetime="2019-06-18T14:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在做一个新零售的收银app，对于app稳定性要求比较高，但是难免会出现一些难以复现的问题，针对这些问题，分析日志有时候是解决问题的必要手段。下面我们主要分析下日志写入方案的实现。</p>
+<h2 id="遇到的坑"><a href="#遇到的坑" class="headerlink" title="遇到的坑"></a>遇到的坑</h2><ul>
+<li><strong>性能问题：</strong>一开始日志的写入就是通过标准I/O直接写文件，当有一条日志要写入的时候，首先，打开文件，然后写入日志，最后关闭文件。但是写文件是 IO 操作，随着日志量的增加，更多的IO操作，一定会造成性能瓶颈。为什么这么说呢？<strong>因为数据从程序写入到磁盘的过程中，其实牵涉到两次数据拷贝：一次是用户空间内存拷贝到内核空间的缓存，一次是回写时内核空间的缓存到硬盘的拷贝。当发生回写时也涉及到了内核空间和用户空间频繁切换</strong>。</li>
+<li><strong>丢日志：</strong>为了解决性能问题，直接想到就是减少I/O操作，我们可以先把日志缓存到内存中，当达到一定数量或者在合适的时机将内存里的日志写入磁盘中。这样似乎可以减少I/O操作，但是在将内存里的日志写入磁盘的过程中，app被强杀了或者Crash了的话，这样会造成更严重的问题，日志丢失。</li>
+</ul>
+<p>看到这里，难道真的就没有高性能又能保证日志完整性的方案了吗？答案是mmap。mmap是个什么鬼？我们接着往下看。</p>
+        
+          <a class="article-more-a" href="/2019/06/18/2019-06-18-Android高性能日志写入方案-mmap/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">mmap</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android/日志//" class="article-tag-list-link color3">日志</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/18/2019-06-18-Android高性能日志写入方案-mmap/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
   
     <article id="post-2019-01-18-understand-jsbridge" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
@@ -1044,98 +1136,6 @@
 
 
   
-    <article id="post-2018-03-04-Java-reflect-01" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/03/04/2018-03-04-Java-reflect-01/">Java进阶 - 反射总结</a>
-    </h1>
-  
-
-        
-        <a href="/2018/03/04/2018-03-04-Java-reflect-01/" class="archive-article-date">
-  	<time datetime="2018-03-04T14:01:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="使用反射获取类的信息"><a href="#使用反射获取类的信息" class="headerlink" title="使用反射获取类的信息"></a>使用反射获取类的信息</h2><h3 id="获取类的所有变量信息"><a href="#获取类的所有变量信息" class="headerlink" title="获取类的所有变量信息"></a>获取类的所有变量信息</h3><p>调用getFields()输出类以及父类所有的public声明的变量；<br>调用getDeclaredFields()输出类的所有成员变量，不问访问权限；</p>
-<h3 id="获取类的所有方法信息"><a href="#获取类的所有方法信息" class="headerlink" title="获取类的所有方法信息"></a>获取类的所有方法信息</h3><p>调用getMethods()输出类以及父类所有的public声明的方法；<br>调用getDeclaredMethods()输出类的所有成员方法，不问访问权限；</p>
-        
-          <a class="article-more-a" href="/2018/03/04/2018-03-04-Java-reflect-01/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">反射</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Java//" class="article-tag-list-link color5">Java</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Java/进阶//" class="article-tag-list-link color3">进阶</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/03/04/2018-03-04-Java-reflect-01/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1245,23 +1245,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Handler</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">HandlerThread</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Kotlin</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Websocket</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1273,7 +1265,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">LRU</a>
+                <a href="javascript:void(0)" class="js-tag color2">Kotlin</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Websocket</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1281,7 +1281,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+                <a href="javascript:void(0)" class="js-tag color5">mmap</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LRU</a>
               </li>
              
               <li class="article-tag-list-item">
