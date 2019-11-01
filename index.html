@@ -255,105 +255,6 @@
 
 
   
-    <article id="post-2019-01-18-understand-jsbridge" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/18/2019-01-18-understand-jsbridge/">JsBridge源码解析</a>
-    </h1>
-  
-
-        
-        <a href="/2019/01/18/2019-01-18-understand-jsbridge/" class="archive-article-date">
-  	<time datetime="2019-01-18T13:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="内容概览"><a href="#内容概览" class="headerlink" title="内容概览"></a>内容概览</h2><p>现在的app基本都是H5混合开发了，这样就涉及到原生代码与Js代码的交互，JsBridge就这样产生了，下面我们分几方面讲解JsBridge是如何实现Native代码和Js的互调：</p>
-<ul>
-<li>JsBridge原理</li>
-<li>核心文件说明</li>
-<li>Native调用Js流程</li>
-<li>Js调用Native流程</li>
-</ul>
-<h2 id="JsBridge原理"><a href="#JsBridge原理" class="headerlink" title="JsBridge原理"></a>JsBridge原理</h2><p><strong>Native调用Js</strong></p>
-<p>webview可以通过loadUrl()的方法直接调用。在4.4以上还可以通过evaluateJavascript()方法获取js方法的返回值。JsBridge就是通过loadUrl的方式实现Native调用Js的。</p>
-        
-          <a class="article-more-a" href="/2019/01/18/2019-01-18-understand-jsbridge/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">开源框架</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/开源框架//" class="article-tag-list-link color5">开源框架</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/01/18/2019-01-18-understand-jsbridge/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-2019-01-01-Android-LruCache" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -378,7 +279,8 @@
 <p>在复习算法和数据结构的时候，我通过双向链表实现了一个LRU缓存淘汰算法，<a href="https://github.com/Jesse505/algo/blob/master/day04/LRUCache.java" target="_blank" rel="noopener">有兴趣的请点击</a></p>
 <h2 id="二、LruCache的介绍"><a href="#二、LruCache的介绍" class="headerlink" title="二、LruCache的介绍"></a>二、LruCache的介绍</h2><p>LruCache是Android 3.1所提供的一个缓存类，所以在Android中可以直接使用LruCache实现内存缓存。而DisLruCache目前在Android 还不是Android SDK的一部分，但Android官方文档推荐使用该算法来实现硬盘缓存。</p>
 <p>LruCache是个泛型类，主要算法原理是把最近使用的对象用强引用（即我们平常使用的对象引用方式）存储在 LinkedHashMap 中。当缓存满时，把最近最少使用的对象从内存中移除，并提供了get和put方法来完成缓存的获取和添加操作。</p>
-<h2 id="三、LruCache的实现原理"><a href="#三、LruCache的实现原理" class="headerlink" title="三、LruCache的实现原理"></a>三、LruCache的实现原理</h2><p>LruCache的核心思想很好理解，就是要维护一个缓存对象列表，其中对象列表的排列方式是按照访问顺序实现的，即一直没访问的对象，将放在队尾，即将被淘汰。而最近访问的对象将放在队头，最后被淘汰。</p>
+<h2 id="三、LruCache的实现原理"><a href="#三、LruCache的实现原理" class="headerlink" title="三、LruCache的实现原理"></a>三、LruCache的实现原理</h2><p><strong>注意：文章分析的源码是V4包下的LruCache代码。</strong></p>
+<p>LruCache的核心思想很好理解，就是要维护一个缓存对象列表，其中对象列表的排列方式是按照访问顺序实现的，即一直没访问的对象，将放在队尾，即将被淘汰。而最近访问的对象将放在队头，最后被淘汰。</p>
 <p>那么这个列表到底是由谁来维护的，前面已经介绍了是由LinkedHashMap来维护。为什么呢？</p>
         
           <a class="article-more-a" href="/2019/01/01/2019-01-01-Android-LruCache/#more">more >></a>
@@ -1036,38 +938,48 @@
 
 
   
-    <article id="post-2018-03-12-Android-Dynamic-proxy" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-2018-06-01-Java-Collection-HashMap" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/03/12/2018-03-12-Android-Dynamic-proxy/">静态代理与动态代理的区别和使用场景</a>
+      <a class="article-title" href="/2018/06/01/2018-06-01-Java-Collection-HashMap/">HashMap原理解析</a>
     </h1>
   
 
         
-        <a href="/2018/03/12/2018-03-12-Android-Dynamic-proxy/" class="archive-article-date">
-  	<time datetime="2018-03-12T13:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-12</time>
+        <a href="/2018/06/01/2018-06-01-Java-Collection-HashMap/" class="archive-article-date">
+  	<time datetime="2018-06-01T14:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-01</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在讲解静态代理与动态代理的区别之前，我们先来回顾代理模式相关的知识点，往下看。</p>
-<h2 id="代理模式的定义"><a href="#代理模式的定义" class="headerlink" title="代理模式的定义"></a>代理模式的定义</h2><blockquote>
-<p>为其他对象提供一种代理以控制对这个对象的访问。</p>
+        <h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><p>从本文你可以学习到：</p>
+<blockquote>
+<ol>
+<li>你知道HashMap的工作原理吗？</li>
+<li>你知道get和put的原理吗？equals()和hashCode()的都有什么作用？</li>
+<li>你知道hash的实现吗？为什么要这样实现？</li>
+<li>如果HashMap的大小超过了负载因子(load factor)定义的容量，怎么办？</li>
+</ol>
 </blockquote>
-<p>说白了，我们可以理解为生活中常见的中介或者明星经纪人，我们买房一般都会通过中介，但是最后卖房的却是开发商，可以认为中介就是开发商的代理。</p>
-<h2 id="代理模式的使用场景"><a href="#代理模式的使用场景" class="headerlink" title="代理模式的使用场景"></a>代理模式的使用场景</h2><blockquote>
-<p>当不能访问或不想直接访问或访问某个对象存在困难时，我们可以通过一个代理对象来间接访问，为了客户端使用的透明性，我们应该保证代理对象和被代理对象应该实现同一个接口。</p>
-</blockquote>
-<h2 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h2><p>理论知识讲了一堆，有点绕口，我们直接讲静态代理吧，我们以买房为例定义接口：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Buy</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">buyHouse</span><span class="params">(<span class="keyword">long</span> money)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>几个关键的信息：<strong>基于Map接口实现、允许null键/值、非同步、不保证有序(比如插入的顺序)、也不保证序不随时间变化</strong>。</p>
+<h2 id="二、两个重要的参数"><a href="#二、两个重要的参数" class="headerlink" title="二、两个重要的参数"></a>二、两个重要的参数</h2><p>在HashMap中有两个很重要的参数，容量(Capacity)和负载因子(Load factor)<br>简单的说，Capacity就是bucket的大小，Load factor就是bucket填满程度的最大比例。如果对迭代性能要求很高的话，不要把<code>capacity</code>设置过大，也不要把<code>load factor</code>设置过小。当bucket中的entries的数目大于<code>capacity*load factor</code>时就需要调整bucket的大小为当前的2倍。</p>
+<p><strong>Capacity默认值是16，Load factor默认值是0.75f</strong></p>
+<h2 id="三、put函数的实现"><a href="#三、put函数的实现" class="headerlink" title="三、put函数的实现"></a>三、put函数的实现</h2><p>put函数大致的思路为：</p>
+<ol>
+<li>对key的hashCode()做hash，然后再计算index;</li>
+<li>如果没碰撞直接放到bucket里；</li>
+<li>如果碰撞了，以链表的形式存在buckets后；</li>
+<li>如果碰撞导致链表过长(大于等于<code>TREEIFY_THRESHOLD</code>)，就把链表转换成红黑树；</li>
+<li>如果节点已经存在就替换old value(保证key的唯一性)</li>
+<li>如果bucket满了(超过<code>load factor*current capacity</code>)，就要resize。
         
-          <a class="article-more-a" href="/2018/03/12/2018-03-12-Android-Dynamic-proxy/#more">more >></a>
+          <a class="article-more-a" href="/2018/06/01/2018-06-01-Java-Collection-HashMap/#more">more >></a>
         
       
 
@@ -1081,7 +993,106 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">设计模式</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Java集合</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Java//" class="article-tag-list-link color5">Java</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Java/集合//" class="article-tag-list-link color3">集合</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/01/2018-06-01-Java-Collection-HashMap/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-2018-05-05-understand-jsbridge" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/05/05/2018-05-05-understand-jsbridge/">JsBridge源码解析</a>
+    </h1>
+  
+
+        
+        <a href="/2018/05/05/2018-05-05-understand-jsbridge/" class="archive-article-date">
+  	<time datetime="2018-05-05T13:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="内容概览"><a href="#内容概览" class="headerlink" title="内容概览"></a>内容概览</h2><p>现在的app基本都是H5混合开发了，这样就涉及到原生代码与Js代码的交互，JsBridge就这样产生了，下面我们分几方面讲解JsBridge是如何实现Native代码和Js的互调：</p>
+<ul>
+<li>JsBridge原理</li>
+<li>核心文件说明</li>
+<li>Native调用Js流程</li>
+<li>Js调用Native流程</li>
+</ul>
+<h2 id="JsBridge原理"><a href="#JsBridge原理" class="headerlink" title="JsBridge原理"></a>JsBridge原理</h2><p><strong>Native调用Js</strong></p>
+<p>webview可以通过loadUrl()的方法直接调用。在4.4以上还可以通过evaluateJavascript()方法获取js方法的返回值。JsBridge就是通过loadUrl的方式实现Native调用Js的。</p>
+        
+          <a class="article-more-a" href="/2018/05/05/2018-05-05-understand-jsbridge/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">开源框架</a>
         		</li>
       		
 		</ul>
@@ -1097,7 +1108,7 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="/categories/Android/设计模式//" class="article-tag-list-link color5">设计模式</a>
+        			<a href="/categories/Android/开源框架//" class="article-tag-list-link color5">开源框架</a>
         		</li>
       		
 		</ul>
@@ -1106,7 +1117,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/03/12/2018-03-12-Android-Dynamic-proxy/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/05/05/2018-05-05-understand-jsbridge/">展开全文 >></a>
         </p>
       
 
@@ -1245,10 +1256,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Handler</a>
               </li>
              
@@ -1257,11 +1264,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">反射</a>
+                <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+                <a href="javascript:void(0)" class="js-tag color2">Java集合</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1269,19 +1276,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">反射</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Websocket</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">mmap</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1289,7 +1292,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LRU</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">mmap</a>
               </li>
             
             <div class="clearfix"></div>
