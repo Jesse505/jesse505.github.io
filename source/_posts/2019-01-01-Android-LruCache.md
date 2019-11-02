@@ -19,6 +19,8 @@ LruCache是个泛型类，主要算法原理是把最近使用的对象用强引
 
 ## 三、LruCache的实现原理
 
+**注意：文章分析的源码是V4包下的LruCache代码。**
+
 LruCache的核心思想很好理解，就是要维护一个缓存对象列表，其中对象列表的排列方式是按照访问顺序实现的，即一直没访问的对象，将放在队尾，即将被淘汰。而最近访问的对象将放在队头，最后被淘汰。
 
 那么这个列表到底是由谁来维护的，前面已经介绍了是由LinkedHashMap来维护。为什么呢？
@@ -105,7 +107,7 @@ public void trimToSize(int maxSize) {
 			if (size <= maxSize || map.isEmpty()) {
 				break;
 			}
-            //迭代器获取第一个对象，即队尾的元素，近期最少访问的元素
+            //迭代器获取第一个对象，即近期最少访问的元素
 			Map.Entry<K, V> toEvict = map.entrySet().iterator().next();
 			key = toEvict.getKey();
 			value = toEvict.getValue();
@@ -133,7 +135,7 @@ public final V get(K key) {
 	V mapValue;
 	synchronized (this) {
             //获取对应的缓存对象
-            //get()方法会实现将访问的元素更新到队列头部的功能
+            //get()方法会实现将访问的元素更新到队列尾部的功能
 		mapValue = map.get(key);
 		if (mapValue != null) {
 			hitCount++;
@@ -143,17 +145,16 @@ public final V get(K key) {
 	}
 ```
 
-get()方法也很简单，这里就不多说了，其实LruCache的中get()方法和put()方法只是简单的调用了LinkedHashMap里的方法，真正的实现是LinkedHashMap中下面这段代码，这段代码在put和get方法中都有被调用过： 
+get()方法也很简单，这里就不多说了，其实LruCache的中get()方法和put()方法只是简单的调用了LinkedHashMap里的方法，真正的实现是LinkedHashMap中下面这段代码，下面这段代码在put和get方法中都有被调用过，作用是将该节点移动到队列的尾部。
 
 ```java
+//将此元素移动到队列的尾部
 void recordAccess(HashMap<K,V> m) {
 	LinkedHashMap<K,V> lm = (LinkedHashMap<K,V>)m;
     //判断是否是访问排序
 	if (lm.accessOrder) {
 		lm.modCount++;
-        //删除此元素
 		remove();
-        //将此元素移动到队列的头部
 		addBefore(lm.header);
 	}
 }
@@ -161,10 +162,7 @@ void recordAccess(HashMap<K,V> m) {
 
 ## 四、总结
 
-**由此可见LruCache中维护了一个集合LinkedHashMap，该LinkedHashMap是以访问顺序排序的。当调用put()方法时，就会在结合中添加元素，并调用trimToSize()判断缓存是否已满，如果满了就用LinkedHashMap的迭代器删除队尾元素，即近期最少访问的元素。当调用get()方法访问缓存对象时，就会调用LinkedHashMap的get()方法获得对应集合元素，同时会更新该元素到队头。**
-
-
-
+- **由此可见LruCache中维护了一个集合LinkedHashMap，该LinkedHashMap是以访问顺序排序的。当调用put()方法时，就会在结合中添加元素，并调用trimToSize()判断缓存是否已满，如果满了就用LinkedHashMap的迭代器删除队尾元素，即近期最少访问的元素。当调用get()方法访问缓存对象时，就会调用LinkedHashMap的get()方法获得对应集合元素，同时会更新该元素到队头。**
 
 
 

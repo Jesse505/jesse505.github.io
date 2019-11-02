@@ -53,7 +53,7 @@ MappedByteBuffer buffer = raf.getChannel().map(FileChannel.MapMode.READ_WRITE, p
 buffer.put(log);
 ```
 
-有一点比较坑，Java 虽然提供了 map 方法，但是并没有提供 `unmap` 方法，通过 Google 得知 `unmap` 方法是有的，不过是私有的，我们可以通过反射调用获取`unmap`方法
+有一点比较坑，Java 虽然提供了 map 方法，但是并没有提供 `unmap` 方法，通过 Google 得知 `unmap` 方法是有的，不过是私有的，我们可以通过反射调用获取`unmap`方法（Android 9.0以上对反射做了限制，可以参考这篇[博文](http://weishu.me/2019/03/16/another-free-reflection-above-android-p/)绕过限制）
 
 ```java
     /**
