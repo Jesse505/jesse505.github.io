@@ -383,9 +383,7 @@
 <p>在复习算法和数据结构的时候，我通过双向链表实现了一个LRU缓存淘汰算法，<a href="https://github.com/Jesse505/algo/blob/master/day04/LRUCache.java" target="_blank" rel="noopener">有兴趣的请点击</a></p>
 <h2 id="二、LruCache的介绍"><a href="#二、LruCache的介绍" class="headerlink" title="二、LruCache的介绍"></a>二、LruCache的介绍</h2><p>LruCache是Android 3.1所提供的一个缓存类，所以在Android中可以直接使用LruCache实现内存缓存。而DisLruCache目前在Android 还不是Android SDK的一部分，但Android官方文档推荐使用该算法来实现硬盘缓存。</p>
 <p>LruCache是个泛型类，主要算法原理是把最近使用的对象用强引用（即我们平常使用的对象引用方式）存储在 LinkedHashMap 中。当缓存满时，把最近最少使用的对象从内存中移除，并提供了get和put方法来完成缓存的获取和添加操作。</p>
-<h2 id="三、LruCache的实现原理"><a href="#三、LruCache的实现原理" class="headerlink" title="三、LruCache的实现原理"></a>三、LruCache的实现原理</h2><p><strong>注意：文章分析的源码是V4包下的LruCache代码。</strong></p>
-<p>LruCache的核心思想很好理解，就是要维护一个缓存对象列表，其中对象列表的排列方式是按照访问顺序实现的，即一直没访问的对象，将放在队尾，即将被淘汰。而最近访问的对象将放在队头，最后被淘汰。</p>
-<p>那么这个列表到底是由谁来维护的，前面已经介绍了是由LinkedHashMap来维护。为什么呢？</p>
+<h2 id="三、LinkedHashMap原理"><a href="#三、LinkedHashMap原理" class="headerlink" title="三、LinkedHashMap原理"></a>三、<strong>LinkedHashMap原理</strong></h2><p>我们先来分析下LinkedHashMap的原理，为后面分析LruCache做准备。<br>LinkedHashMap 继承 HashMap，在 HashMap 的基础上进行扩展，put 方法并没有重写，说明<strong>LinkedHashMap遵循HashMap的数组加链表的结构</strong>，LinkedHashMap重写了 <strong>createEntry</strong> <strong>()</strong>和<strong>get()</strong>方法</p>
         
           <a class="article-more-a" href="/2019/01/01/2019-01-01-Android-LruCache/#more">more >></a>
         
@@ -1257,11 +1255,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">AIDL</a>
+                <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Handler</a>
+                <a href="javascript:void(0)" class="js-tag color5">AIDL</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1269,7 +1267,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
+                <a href="javascript:void(0)" class="js-tag color3">Handler</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1293,19 +1291,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">组件化</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LRU</a>
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">组件化</a>
               </li>
              
               <li class="article-tag-list-item">
