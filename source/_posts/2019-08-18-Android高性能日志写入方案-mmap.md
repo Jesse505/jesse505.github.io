@@ -1,6 +1,6 @@
 ---
 title: Android高性能日志写入方案-mmap
-date: 2019-06-18 22:11:15
+date: 2019-08-18 22:11:15
 tags: mmap
 categories: [Android,日志]
 ---

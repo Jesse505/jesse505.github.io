@@ -95,11 +95,13 @@ public class OkHttpClient implements Cloneable, Call.Factory { ... }
     executed = true;
   }
   try {
+    //加入runningSyncCalls队列
     client.dispatcher().executed(this);                                 // (2)
     Response result = getResponseWithInterceptorChain();                // (3)
     if (result == null) throw new IOException("Canceled");
     return result;
   } finally {
+    //移出runningSyncCalls队列
     client.dispatcher().finished(this);                                 // (4)
   }
 }
@@ -153,7 +155,9 @@ private Response getResponseWithInterceptorChain() throws IOException {
 4. 负责读取缓存直接返回、更新缓存的 `CacheInterceptor`；
 5. 负责和服务器建立连接的 `ConnectInterceptor`；
 6. 配置 `OkHttpClient` 时设置的 `networkInterceptors`；
-7. 负责向服务器发送请求数据、从服务器读取响应数据的 `CallServerInterceptor`。
+7. 负责向服务器发送请求数据、从服务器读取响应数据的 `CallServerInterceptor`。为了便于理解各个拦截器的作用，这里盗用一张图说明下：
+
+<img src="/img/201712/okhttp_interceptors_do.png" alt="okhttp_interceptors_do" style="width: 500px;">
 
 添加完过滤器后，就是执行过滤器了,这里也很重要，一开始看比较难以理解。
 
@@ -243,7 +247,7 @@ public final class ConnectInterceptor implements Interceptor {
   }
 }
 ```
-可以看到这里我们拿了一个ConnectInterceptor的源码，这里得到chain后，进行相应的处理后，继续调用proceed方法，那么接着刚才的逻辑，index+1,获取下一个interceptor,重复操作，所以现在就很清楚了，这里利用递归循环，也就是okHttp最经典的责任链模式
+可以看到这里我们拿了一个ConnectInterceptor的源码，这里得到chain后，进行相应的处理后，继续调用proceed方法，那么接着刚才的逻辑，index+1,获取下一个interceptor,重复操作，所以现在就很清楚了，这里利用递归循环，也就是okHttp最经典的责任链模式。
 
 责任链模式在安卓系统中也有比较典型的实践，例如 view 系统对点击事件（TouchEvent）的处理，具体可以参考[Android设计模式源码解析之责任链模式](https://github.com/simple-android-framework-exchange/android_design_patterns_analysis/tree/master/chain-of-responsibility/AigeStudio#android源码中的模式实现)中相关的分析。
 
@@ -283,7 +287,42 @@ synchronized void enqueue(AsyncCall call) {
 
 这里我们就能看到 dispatcher 在异步执行时发挥的作用了，如果当前还能执行一个并发请求，那就立即执行，否则加入 `readyAsyncCalls` 队列，而正在执行的请求执行完毕之后，会调用 `promoteCalls()` 函数，来把 `readyAsyncCalls` 队列中的 `AsyncCall` “提升”为 `runningAsyncCalls`，并开始执行。
 
-这里的 `AsyncCall` 是 `RealCall` 的一个内部类，它实现了 `Runnable`，所以可以被提交到 `ExecutorService` 上执行，而它在执行时会调用 `getResponseWithInterceptorChain()` 函数，并把结果通过 `responseCallback` 传递给上层使用者。
+这里的 `AsyncCall` 是 `RealCall` 的一个内部类，它实现了 `Runnable`，所以可以被提交到 `ExecutorService` 上执行，而它在执行时会调用 `getResponseWithInterceptorChain()` 函数，并把结果通过 `responseCallback` 传递给上层使用者。代码如下：
+
+```java
+	//RealCall的内部类
+  final class AsyncCall extends NamedRunnable {
+   		....省略部分代码
+    @Override protected void execute() {
+      boolean signalledCallback = false;
+      try {
+        //还是通过此方法获取网络请求的返回值
+        Response response = getResponseWithInterceptorChain();
+        ...
+      } catch (IOException e) {
+        ...
+      } finally {
+        //通知dispatcher
+        client.dispatcher().finished(this);
+      }
+    }
+  }
+
+//继续追踪client.dispatcher().finished(this);发现调用的是如下代码
+  private void promoteCalls() {
+    if (runningAsyncCalls.size() >= maxRequests) return; // Already running max capacity.
+    if (readyAsyncCalls.isEmpty()) return; // No ready calls to promote.
+    for (Iterator<AsyncCall> i = readyAsyncCalls.iterator(); i.hasNext(); ) {
+      AsyncCall call = i.next();
+      if (runningCallsForHost(call) < maxRequestsPerHost) {
+        i.remove();
+        runningAsyncCalls.add(call);
+        executorService().execute(call);
+      }
+      if (runningAsyncCalls.size() >= maxRequests) return; // Reached max capacity.
+    }
+  }
+```
 
 这样看来，同步请求和异步请求的原理是一样的，都是在 `getResponseWithInterceptorChain()` 函数中通过 `Interceptor` 链条来实现的网络请求逻辑，而异步则是通过 `ExecutorService` 实现。
 
@@ -296,7 +335,7 @@ synchronized void enqueue(AsyncCall call) {
 1. 每个 body 只能被消费一次，多次消费会抛出异常；
 2. body 必须被关闭，否则会发生资源泄漏；
 
-这里有一点值得一提，OkHttp 对响应的校验非常严格，HTTP status line 不能有任何杂乱的数据，否则就会抛出异常，在我们公司项目的实践中，由于服务器的问题，偶尔 status line 会有额外数据，而服务端的问题也毫无头绪，导致我们不得不忍痛继续使用 HttpUrlConnection，而后者在一些系统上又存在各种其他的问题，例如魅族系统发送 multi-part form 的时候就会出现没有响应的问题。
+这里有一点值得一提，OkHttp 对响应的校验非常严格，HTTP status line 不能有任何杂乱的数据，否则就会抛出异。
 
 ### 2.5 HTTP 缓存
 
@@ -314,8 +353,6 @@ public Cache(File directory, long maxSize);
 
 ## 3 总结
 
-OkHttp 还有很多细节部分没有在本文展开，例如 HTTP2/HTTPS 的支持等，但建立一个清晰的概览非常重要。对整体有了清晰认识之后，细节部分如有需要，再单独深入将更加容易。
-
 在文章最后我们再来回顾一下完整的流程图：
 
 <img src="/img/201712/okhttp_full_process.png" alt="okhttp_full_process" style="width: 600px;">
@@ -323,3 +360,7 @@ OkHttp 还有很多细节部分没有在本文展开，例如 HTTP2/HTTPS 的支
 + `OkHttpClient` 实现 `Call.Factory`，负责为 `Request` 创建 `Call`；
 + `RealCall` 为具体的 `Call` 实现，其 `enqueue()` 异步接口通过 `Dispatcher` 利用 `ExecutorService` 实现，而最终进行网络请求时和同步 `execute()` 接口一致，都是通过 `getResponseWithInterceptorChain()` 函数实现；
 + `getResponseWithInterceptorChain()` 中利用 `Interceptor` 链条，分层实现缓存、透明压缩、网络 IO 等功能；
+
+
+
+感谢： https://dandanlove.com/2018/11/25/okhttp-interceptor/
