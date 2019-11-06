@@ -19,7 +19,7 @@
 <meta property="og:description" content="一、LRU算法介绍LRU是最近最少使用的算法，它的核心思想是当缓存满时，会优先淘汰那些最近最少使用的缓存对象。采用LRU算法的缓存有两种：LruCache和DisLruCache，分别用于实现内存缓存和硬盘缓存，其核心思想都是LRU缓存算法。 在复习算法和数据结构的时候，我通过双向链表实现了一个LRU缓存淘汰算法，有兴趣的请点击 二、LruCache的介绍LruCache是Android 3.1所">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://jesse505.github.io/img/201901/LinkedHashMap.png">
-<meta property="og:updated_time" content="2019-11-05T16:22:37.000Z">
+<meta property="og:updated_time" content="2019-11-06T01:53:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LruCache原理">
 <meta name="twitter:description" content="一、LRU算法介绍LRU是最近最少使用的算法，它的核心思想是当缓存满时，会优先淘汰那些最近最少使用的缓存对象。采用LRU算法的缓存有两种：LruCache和DisLruCache，分别用于实现内存缓存和硬盘缓存，其核心思想都是LRU缓存算法。 在复习算法和数据结构的时候，我通过双向链表实现了一个LRU缓存淘汰算法，有兴趣的请点击 二、LruCache的介绍LruCache是Android 3.1所">
@@ -197,7 +197,7 @@
 <li>recordAccess方法在LinkedHashMap重写的get方法里和HashMap的put方法里都有调用，作用是在访问模式下，每次访问了节点，就把该节点放到header节点的前面。</li>
 </ul>
 <p>这里放一张图，有助于理解：</p>
-<p><img src="/img/201901/LinkedHashMap.png" alt="okhttp_full_process" style="width: 600px;"></p>
+<p><img src="/img/201901/LinkedHashMap.png" alt="LinkedHashMap" style="width: 600px;"></p>
 <h2 id="四、LruCache的实现原理"><a href="#四、LruCache的实现原理" class="headerlink" title="四、LruCache的实现原理"></a>四、LruCache的实现原理</h2><p><strong>注意：文章分析的源码是V4包下的LruCache代码。</strong></p>
 <p>LruCache的核心思想很好理解，就是要维护一个缓存对象列表，其中对象列表的排列方式是按照访问顺序实现的，即一直没访问的对象，将放在队尾，即将被淘汰。而最近访问的对象将放在队头，最后被淘汰。这样的存储规则LinkedHashMap正好可以提供。</p>
 <p>通过下面构造函数来指定LinkedHashMap中双向链表的结构是访问顺序还是插入顺序。</p>
