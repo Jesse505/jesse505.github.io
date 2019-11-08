@@ -85,7 +85,7 @@ LinkedHashMap 继承 HashMap，在 HashMap 的基础上进行扩展，put 方法
 
 这里放一张图，有助于理解：
 
-<img src="/img/201901/LinkedHashMap.png" alt="okhttp_full_process" style="width: 600px;">
+<img src="/img/201901/LinkedHashMap.png" alt="LinkedHashMap" style="width: 600px;">
 
 ## 四、LruCache的实现原理
 
