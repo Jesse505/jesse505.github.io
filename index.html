@@ -54,7 +54,7 @@
 		  <h1 class="header-author"><a href="/">赵一飞</a></h1>
 		</hgroup>
 		
-		<p class="header-subtitle">胜不骄，败不馁</p>
+		<p class="header-subtitle">不给人生留遗憾</p>
 		
 
 		<nav class="header-menu">
@@ -112,7 +112,7 @@
 			  <h1 class="header-author js-header-author">赵一飞</h1>
 			</hgroup>
 			
-			<p class="header-subtitle"><i class="icon icon-quo-left"></i>胜不骄，败不馁<i class="icon icon-quo-right"></i></p>
+			<p class="header-subtitle"><i class="icon icon-quo-left"></i>不给人生留遗憾<i class="icon icon-quo-right"></i></p>
 			
 			
 			
@@ -179,7 +179,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在做一个新零售的收银app，对于app稳定性要求比较高，但是难免会出现一些难以复现的问题，针对这些问题，分析日志有时候是解决问题的必要手段。下面我们主要分析下日志写入方案的实现。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在做一个新零售的收银app，对于app稳定性要求比较高，但是难免会出现一些难以复现的问题，针对这些问题，分析日志有时候是解决问题的必要手段。下面我们主要分析下日志写入方案的实现。详细代码可参考<a href="https://github.com/Jesse505/AwesomeLog" target="_blank" rel="noopener">AwesomeLog</a>，如果能够帮到你，希望给个star，感谢。</p>
 <h2 id="常规方案的缺陷"><a href="#常规方案的缺陷" class="headerlink" title="常规方案的缺陷"></a>常规方案的缺陷</h2><ul>
 <li><strong>性能问题：</strong>一开始日志的写入就是通过标准I/O直接写文件，当有一条日志要写入的时候，首先，打开文件，然后写入日志，最后关闭文件。但是写文件是 IO 操作，随着日志量的增加，更多的IO操作，一定会造成性能瓶颈。为什么这么说呢？<strong>因为数据从程序写入到磁盘的过程中，其实牵涉到两次数据拷贝：一次是用户空间内存拷贝到内核空间的缓存，一次是回写时内核空间的缓存到硬盘的拷贝。当发生回写时也涉及到了内核空间和用户空间频繁切换</strong>。</li>
 <li><strong>丢日志：</strong>为了解决性能问题，直接想到就是减少I/O操作，我们可以先把日志缓存到内存中，当达到一定数量或者在合适的时机将内存里的日志写入磁盘中。这样似乎可以减少I/O操作，但是在将内存里的日志写入磁盘的过程中，app被强杀了或者Crash了的话，这样会造成更严重的问题，日志丢失。</li>
@@ -1164,7 +1164,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2019 赵一飞
+    		&copy; 2020 赵一飞
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1267,15 +1267,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">反射</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1291,6 +1291,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LRU</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">组件化</a>
               </li>
              
@@ -1300,10 +1304,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">Binder</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">LRU</a>
               </li>
              
               <li class="article-tag-list-item">
