@@ -54,7 +54,7 @@
 		  <h1 class="header-author"><a href="/">赵一飞</a></h1>
 		</hgroup>
 		
-		<p class="header-subtitle">不给人生留遗憾</p>
+		<p class="header-subtitle">积累，不可或缺，开放</p>
 		
 
 		<nav class="header-menu">
@@ -112,7 +112,7 @@
 			  <h1 class="header-author js-header-author">赵一飞</h1>
 			</hgroup>
 			
-			<p class="header-subtitle"><i class="icon icon-quo-left"></i>不给人生留遗憾<i class="icon icon-quo-right"></i></p>
+			<p class="header-subtitle"><i class="icon icon-quo-left"></i>积累，不可或缺，开放<i class="icon icon-quo-right"></i></p>
 			
 			
 			
@@ -158,6 +158,116 @@
           </div>
           <div id="js-content" class="content-ll">
             
+  
+    <article id="post-2018-06-01-Java-Collection-HashMap" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/01/2018-06-01-Java-Collection-HashMap/">HashMap原理解析</a>
+    </h1>
+  
+
+        
+        <a href="/2018/06/01/2018-06-01-Java-Collection-HashMap/" class="archive-article-date">
+  	<time datetime="2018-06-01T14:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><p>从本文你可以学习到：</p>
+<blockquote>
+<ol>
+<li>你知道HashMap的工作原理吗？</li>
+<li>你知道get和put的原理吗？equals()和hashCode()的都有什么作用？</li>
+<li>你知道hash的实现吗？为什么要这样实现？</li>
+<li>如果HashMap的大小超过了负载因子(load factor)定义的容量，怎么办？</li>
+</ol>
+</blockquote>
+<p>几个关键的信息：<strong>基于Map接口实现、允许null键/值、非同步、不保证有序(比如插入的顺序)、也不保证序不随时间变化</strong>。</p>
+<h2 id="二、两个重要的参数"><a href="#二、两个重要的参数" class="headerlink" title="二、两个重要的参数"></a>二、两个重要的参数</h2><p>在HashMap中有两个很重要的参数，容量(Capacity)和负载因子(Load factor)<br>简单的说，Capacity就是bucket的大小，Load factor就是bucket填满程度的最大比例。如果对迭代性能要求很高的话，不要把<code>capacity</code>设置过大，也不要把<code>load factor</code>设置过小。当bucket中的entries的数目大于<code>capacity*load factor</code>时就需要调整bucket的大小为当前的2倍。</p>
+<p><strong>Capacity默认值是16，Load factor默认值是0.75f</strong></p>
+<h2 id="三、put函数的实现"><a href="#三、put函数的实现" class="headerlink" title="三、put函数的实现"></a>三、put函数的实现</h2><p>put函数大致的思路为：</p>
+<ol>
+<li>对key的hashCode()做hash，然后再计算index;</li>
+<li>如果没碰撞直接放到bucket里；</li>
+<li>如果碰撞了，以链表的形式存在buckets后；</li>
+<li>如果碰撞导致链表过长(大于等于<code>TREEIFY_THRESHOLD</code>)，就把链表转换成红黑树；</li>
+<li>如果节点已经存在就替换old value(保证key的唯一性)</li>
+<li>如果bucket满了(超过<code>load factor*current capacity</code>)，就要resize。
+        
+          <a class="article-more-a" href="/2018/06/01/2018-06-01-Java-Collection-HashMap/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Java集合</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Java//" class="article-tag-list-link color5">Java</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Java/集合//" class="article-tag-list-link color3">集合</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/01/2018-06-01-Java-Collection-HashMap/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
   
     <article id="post-2018-03-12-Android-Dynamic-proxy" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
@@ -1052,100 +1162,6 @@
 
 
   
-    <article id="post-2017-02-05-Understand-jni-part1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/02/05/2017-02-05-Understand-jni-part1/">Android与JNI（一）实现动态注册</a>
-    </h1>
-  
-
-        
-        <a href="/2017/02/05/2017-02-05-Understand-jni-part1/" class="archive-article-date">
-  	<time datetime="2017-02-05T14:21:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-02-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h3><p>Android Studio对JNI的开发是越来越友好了，给Google老大哥大大的赞，AS升级到2.2以后就能通过CMake编译，十分方便，具体可参考官方网站<a href="https://developer.android.com/studio/projects/add-native-code" target="_blank" rel="noopener">https://developer.android.com/studio/projects/add-native-code</a>，至于JNI编译的其他方式，比如ndk-build，可参考这个<a href="https://blog.csdn.net/mabeijianxi/article/details/68525164" target="_blank" rel="noopener">哥们的文章</a>。好了说了这么多，并没有讲到今天文章的重点，哈哈，我们现在开始啦。<br>静态注册, 每个 class 都需要使用 javah 生成一个头文件，并且生成的名字很长书写不便；初次调用时需要依据名字搜索对应的JNI层函数来建立关联关系，会影响运行效率。所以这时候动态注册就登场了。</p>
-<h3 id="动态注册"><a href="#动态注册" class="headerlink" title="动态注册"></a>动态注册</h3><h4 id="一-入口函数"><a href="#一-入口函数" class="headerlink" title="一.入口函数"></a>一.入口函数</h4><p>System.loadLibrary加载完 JNI 动态库之后，调用JNI_OnLoad函数，开始动态注册。这里就是登记注册的地方。注意：一个.so只能存在一个onload方法。</p>
-<h4 id="二-登记本地方法"><a href="#二-登记本地方法" class="headerlink" title="二.登记本地方法"></a>二.登记本地方法</h4><p>登记本地方法，作用是将 c/c++ 的函数映射到 JAVA 中，而在这里面起到关键作用的是结构体 JNINativeMethod 。他再jni.h文件中</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span> </span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* name; <span class="comment">//Java中函数的名字</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* signature; <span class="comment">//描述了函数的参数和返回值</span></span><br><span class="line">    <span class="keyword">void</span>* fnPtr; <span class="comment">//函数指针，指向我们调用别人家c++的封装 JNI 函数方法</span></span><br><span class="line">&#125; JNINativeMethod;</span><br></pre></td></tr></table></figure>
-        
-          <a class="article-more-a" href="/2017/02/05/2017-02-05-Understand-jni-part1/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">JNI</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/NDK//" class="article-tag-list-link color4">NDK</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/02/05/2017-02-05-Understand-jni-part1/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1263,15 +1279,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">反射</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1287,6 +1303,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LRU</a>
               </li>
              
@@ -1295,11 +1319,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+                <a href="javascript:void(0)" class="js-tag color5">路由框架</a>
               </li>
              
               <li class="article-tag-list-item">

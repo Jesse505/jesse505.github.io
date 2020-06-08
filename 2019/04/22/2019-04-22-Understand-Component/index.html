@@ -8,22 +8,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://jesse505.github.io">
-  <title>Android高性能日志写入方案-mmap | 赵一飞的博客</title>
+  <title>Android模块化/组件化实践 | 赵一飞的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前言最近在做一个新零售的收银app，对于app稳定性要求比较高，但是难免会出现一些难以复现的问题，针对这些问题，分析日志有时候是解决问题的必要手段。下面我们主要分析下日志写入方案的实现。详细代码可参考AwesomeLog，如果能够帮到你，希望给个star，感谢。 常规方案的缺陷 性能问题：一开始日志的写入就是通过标准I/O直接写文件，当有一条日志要写入的时候，首先，打开文件，然后写入日志，最后关闭">
-<meta name="keywords" content="mmap">
+  <meta name="description" content="前言在项目的开发过程中，随着开发人员的增多及功能的增加，代码会越来臃肿，功能间代码耦合也会越来越严重，项目编译的时间也会很长，为了解决以上问题，模块化/组件化就应运而生了。这篇文章我就结合自己在项目中的组件化重构之路来总结下模块化需要解决的问题？以及如何解决？ 组件化开发需要解决的问题在实现组件化的过程中，同一个问题可能有不同的技术路径可以解决，但是需要解决的问题主要有以下几点：  如何拆分项目">
+<meta name="keywords" content="组件化">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android高性能日志写入方案-mmap">
-<meta property="og:url" content="https://jesse505.github.io/2019/08/18/2019-08-18-Android高性能日志写入方案-mmap/index.html">
+<meta property="og:title" content="Android模块化&#x2F;组件化实践">
+<meta property="og:url" content="https://jesse505.github.io/2019/04/22/2019-04-22-Understand-Component/index.html">
 <meta property="og:site_name" content="赵一飞的博客">
-<meta property="og:description" content="前言最近在做一个新零售的收银app，对于app稳定性要求比较高，但是难免会出现一些难以复现的问题，针对这些问题，分析日志有时候是解决问题的必要手段。下面我们主要分析下日志写入方案的实现。详细代码可参考AwesomeLog，如果能够帮到你，希望给个star，感谢。 常规方案的缺陷 性能问题：一开始日志的写入就是通过标准I/O直接写文件，当有一条日志要写入的时候，首先，打开文件，然后写入日志，最后关闭">
+<meta property="og:description" content="前言在项目的开发过程中，随着开发人员的增多及功能的增加，代码会越来臃肿，功能间代码耦合也会越来越严重，项目编译的时间也会很长，为了解决以上问题，模块化/组件化就应运而生了。这篇文章我就结合自己在项目中的组件化重构之路来总结下模块化需要解决的问题？以及如何解决？ 组件化开发需要解决的问题在实现组件化的过程中，同一个问题可能有不同的技术路径可以解决，但是需要解决的问题主要有以下几点：  如何拆分项目">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://jesse505.github.io/img/201906/mmap.jpg">
-<meta property="og:updated_time" content="2020-04-08T07:39:00.000Z">
+<meta property="og:updated_time" content="2020-06-08T15:10:43.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Android高性能日志写入方案-mmap">
-<meta name="twitter:description" content="前言最近在做一个新零售的收银app，对于app稳定性要求比较高，但是难免会出现一些难以复现的问题，针对这些问题，分析日志有时候是解决问题的必要手段。下面我们主要分析下日志写入方案的实现。详细代码可参考AwesomeLog，如果能够帮到你，希望给个star，感谢。 常规方案的缺陷 性能问题：一开始日志的写入就是通过标准I/O直接写文件，当有一条日志要写入的时候，首先，打开文件，然后写入日志，最后关闭">
-<meta name="twitter:image" content="https://jesse505.github.io/img/201906/mmap.jpg">
+<meta name="twitter:title" content="Android模块化&#x2F;组件化实践">
+<meta name="twitter:description" content="前言在项目的开发过程中，随着开发人员的增多及功能的增加，代码会越来臃肿，功能间代码耦合也会越来越严重，项目编译的时间也会很长，为了解决以上问题，模块化/组件化就应运而生了。这篇文章我就结合自己在项目中的组件化重构之路来总结下模块化需要解决的问题？以及如何解决？ 组件化开发需要解决的问题在实现组件化的过程中，同一个问题可能有不同的技术路径可以解决，但是需要解决的问题主要有以下几点：  如何拆分项目">
   
     <link rel="alternative" href="/atom.xml" title="赵一飞的博客" type="application/atom+xml">
   
@@ -58,7 +56,7 @@
 		  <h1 class="header-author"><a href="/">赵一飞</a></h1>
 		</hgroup>
 		
-		<p class="header-subtitle">不给人生留遗憾</p>
+		<p class="header-subtitle">积累，不可或缺，开放</p>
 		
 
 		<nav class="header-menu">
@@ -116,7 +114,7 @@
 			  <h1 class="header-author js-header-author">赵一飞</h1>
 			</hgroup>
 			
-			<p class="header-subtitle"><i class="icon icon-quo-left"></i>不给人生留遗憾<i class="icon icon-quo-right"></i></p>
+			<p class="header-subtitle"><i class="icon icon-quo-left"></i>积累，不可或缺，开放<i class="icon icon-quo-right"></i></p>
 			
 			
 			
@@ -161,58 +159,85 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-2019-08-18-Android高性能日志写入方案-mmap" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-2019-04-22-Understand-Component" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Android高性能日志写入方案-mmap
+      Android模块化/组件化实践
     </h1>
   
 
         
-        <a href="/2019/08/18/2019-08-18-Android高性能日志写入方案-mmap/" class="archive-article-date">
-  	<time datetime="2019-08-18T14:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-18</time>
+        <a href="/2019/04/22/2019-04-22-Understand-Component/" class="archive-article-date">
+  	<time datetime="2019-04-22T14:01:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-22</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在做一个新零售的收银app，对于app稳定性要求比较高，但是难免会出现一些难以复现的问题，针对这些问题，分析日志有时候是解决问题的必要手段。下面我们主要分析下日志写入方案的实现。详细代码可参考<a href="https://github.com/Jesse505/AwesomeLog" target="_blank" rel="noopener">AwesomeLog</a>，如果能够帮到你，希望给个star，感谢。</p>
-<h2 id="常规方案的缺陷"><a href="#常规方案的缺陷" class="headerlink" title="常规方案的缺陷"></a>常规方案的缺陷</h2><ul>
-<li><strong>性能问题：</strong>一开始日志的写入就是通过标准I/O直接写文件，当有一条日志要写入的时候，首先，打开文件，然后写入日志，最后关闭文件。但是写文件是 IO 操作，随着日志量的增加，更多的IO操作，一定会造成性能瓶颈。为什么这么说呢？<strong>因为数据从程序写入到磁盘的过程中，其实牵涉到两次数据拷贝：一次是用户空间内存拷贝到内核空间的缓存，一次是回写时内核空间的缓存到硬盘的拷贝。当发生回写时也涉及到了内核空间和用户空间频繁切换</strong>。</li>
-<li><strong>丢日志：</strong>为了解决性能问题，直接想到就是减少I/O操作，我们可以先把日志缓存到内存中，当达到一定数量或者在合适的时机将内存里的日志写入磁盘中。这样似乎可以减少I/O操作，但是在将内存里的日志写入磁盘的过程中，app被强杀了或者Crash了的话，这样会造成更严重的问题，日志丢失。</li>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在项目的开发过程中，随着开发人员的增多及功能的增加，代码会越来臃肿，功能间代码耦合也会越来越严重，项目编译的时间也会很长，为了解决以上问题，模块化/组件化就应运而生了。这篇文章我就结合自己在项目中的组件化重构之路来总结下模块化需要解决的问题？以及如何解决？</p>
+<h2 id="组件化开发需要解决的问题"><a href="#组件化开发需要解决的问题" class="headerlink" title="组件化开发需要解决的问题"></a>组件化开发需要解决的问题</h2><p>在实现组件化的过程中，同一个问题可能有不同的技术路径可以解决，但是需要解决的问题主要有以下几点：</p>
+<ul>
+<li>如何拆分项目</li>
+<li>如何满足单个业务模块的单独运行及调试的需求</li>
+<li>如何满足模块间的数据通信</li>
+<li>如何满足模块间的页面跳转</li>
+<li>如何真正实现解耦，降低开发人员的失误，真正实现模块间代码和资源的相互隔离</li>
+<li>如何实现组件Application的动态配置</li>
 </ul>
-<p>看到这里，难道真的就没有高性能又能保证日志完整性的方案了吗？答案是mmap。mmap是个什么鬼？我们接着往下看。</p>
+<p>以上就是实现组件化的过程中我们要解决的主要问题，下面我们会一个一个来解决，最终实现比较合理的组件化开发。</p>
+<h2 id="一、拆分项目"><a href="#一、拆分项目" class="headerlink" title="一、拆分项目"></a>一、拆分项目</h2><p>以下分层是我在项目中的分层实践，仅供参考:</p>
+<ul>
+<li><strong>宿主层</strong>：App壳，负责集成业务模块</li>
+<li><strong>业务模块</strong>：将项目的每个大功能模块拆分成一个个单独的moudle</li>
+<li><strong>业务组件：</strong>业务模块中的公共业务组件，比如进度查询，资料填写，以及人脸识别和OCR组件。</li>
+<li><strong>底层SDK</strong>：各个业务线沉淀的一些公共组件，比如网络，图片，日志，风控，崩溃，UI</li>
+</ul>
 <a id="more"></a>
-<h2 id="什么是mmap"><a href="#什么是mmap" class="headerlink" title="什么是mmap"></a>什么是mmap</h2><blockquote>
-<p>mmap是一种内存映射文件的方法，即将一个文件或者其他对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对应关系；实现这样的映射关系后，进程就可以采用指针的方式读写操作这一块内存，而系统会自动回写脏页面到对应的文件磁盘上，即完成了对文件的操作而不必调用read，write等系统调用函数，相反，内核空间堆这段区域的修改也直接反应到用户空间，从而可以实现不同进程间的文件共享。</p>
-</blockquote>
-<p>网上很多文章都说 mmap 完全绕开了页缓存机制，其实这并不正确。我们最终映射的物理内存依然在页缓存中，它可以带来的好处有：</p>
+<h2 id="二、组件单独调试"><a href="#二、组件单独调试" class="headerlink" title="二、组件单独调试"></a>二、组件单独调试</h2><h3 id="1-动态配置组件的工程类型"><a href="#1-动态配置组件的工程类型" class="headerlink" title="1. 动态配置组件的工程类型"></a>1. 动态配置组件的工程类型</h3><p>在 AndroidStudio 开发 Android 项目时，使用的是 Gradle 来构建，具体来说使用的是 Android Gradle 插件来构建，Android Gradle 中提供了三种插件，在开发中可以通过配置不同的插件来配置不同的工程。</p>
 <ul>
-<li><strong>减少系统调用</strong>。我们只需要一次 mmap() 系统调用，后续所有的调用像操作内存一样，而不会出现大量的 read/write 系统调用。</li>
-<li><strong>减少数据拷贝</strong>。普通的 read() 调用，数据需要经过两次拷贝；而 mmap 只需要从磁盘拷贝一次就可以了，并且由于做过内存映射，也不需要再拷贝回用户空间。</li>
-<li><strong>可靠性高</strong>。mmap 把数据写入页缓存后，跟缓存 I/O 的延迟写机制一样，可以依靠内核线程定期写回磁盘。</li>
+<li>App 插件，id: com.android.application</li>
+<li>Library 插件，id: com.android.libraay</li>
+<li>Test 插件，id: com.android.test</li>
 </ul>
-<p><img src="/img/201906/mmap.jpg" alt="mmap" style="width: 600px;"></p>
-<p>从上面的图看来，我们使用 mmap 仅仅只需要一次数据拷贝。</p>
-<h2 id="mmap使用场景"><a href="#mmap使用场景" class="headerlink" title="mmap使用场景"></a>mmap使用场景</h2><p>mmap 比较适合于对<strong>同一块区域频繁读写</strong>的情况，推荐也使用线程来操作。</p>
-<ul>
-<li>用户日志、数据上报都满足这种场景，微信开源的 mars 框架中的 <a href="https://mp.weixin.qq.com/s/cnhuEodJGIbdodh0IxNeXQ" target="_blank" rel="noopener">xlog</a>模块也是基于 mmap 特性实现的。</li>
-<li>需要跨进程同步的时候，mmap 也是一个不错的选择，Android 跨进程通信有自己独有的 Binder 机制，它内部也是使用 mmap 实现。</li>
-</ul>
-<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>在Android中可以将文件通过Java提供的<code>MappedByteBuffer</code>映射到内存，然后进行读写。（微信的<a href="https://mp.weixin.qq.com/s/cnhuEodJGIbdodh0IxNeXQ" target="_blank" rel="noopener">xlog</a>模块mmap实现是基于C++代码实现)</p>
-<p><code>MappedByteBuffer</code> 位于 Java NIO 包下，用于将文件内容映射到缓冲区，使用的即是 mmap 技术。通过 FileChannel 的 <code>map</code> 方法可以创建缓冲区。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RandomAccessFile raf = <span class="keyword">new</span> RandomAccessFile(file, <span class="string">"rw"</span>);</span><br><span class="line"><span class="comment">//position映射文件的起始位置，size映射文件的大小</span></span><br><span class="line">MappedByteBuffer buffer = raf.getChannel().map(FileChannel.MapMode.READ_WRITE, position, size);</span><br><span class="line"><span class="comment">//往缓冲区里写入字节数据</span></span><br><span class="line">buffer.put(log);</span><br></pre></td></tr></table></figure>
-<p>有一点比较坑，Java 虽然提供了 map 方法，但是并没有提供 <code>unmap</code> 方法，通过 Google 得知 <code>unmap</code> 方法是有的，不过是私有的，我们可以通过反射调用获取<code>unmap</code>方法（Android 9.0以上对反射做了限制，可以参考这篇<a href="http://weishu.me/2019/03/16/another-free-reflection-above-android-p/" target="_blank" rel="noopener">博文</a>绕过限制）</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 解除内存与文件的映射</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">unmap</span><span class="params">(MappedByteBuffer mbbi)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mbbi == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Class&lt;?&gt; clazz = Class.forName(<span class="string">"sun.nio.ch.FileChannelImpl"</span>);</span><br><span class="line">        Method m = clazz.getDeclaredMethod(<span class="string">"unmap"</span>, MappedByteBuffer.class);</span><br><span class="line">        m.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        m.invoke(<span class="keyword">null</span>, mbbi);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在这里记录一个点，刚开始在写入文件的时候，我是使用mmap将日志直接写入文件，这样的话需要通过代码去实现动态扩容，挺麻烦的，后来发现xlog是将日志写入高速缓冲区，这块高速缓冲区是使用mmap映射出来的内存区，被映射的磁盘文件是它新建的一个缓存文件，当高速缓冲区内容写到一定阈值时，通知后台线程将缓冲区的内容写入文件。借鉴xlog的方案，后面我们也改为<strong>先写入缓存中，当写满了之后，再flush到目标文件，也可以手动调用flush，将缓存刷新到目标文件</strong>。</p>
-<p>至于微信为什么这么做，肯定也是出于性能的原因啦，具体的可参考<a href="https://zhuanlan.zhihu.com/p/25011775" target="_blank" rel="noopener">微信跨平台组件mars-xlog架构分析及迁移思路</a></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这篇文章主要讲了日志写入常规方案存在的一些缺陷以及原因，进而引出mmap的定义，优势和使用场景。最后主要讲了mmap的具体实现以及如何应用到日志写入当中。详细代码可参考<a href="https://github.com/Jesse505/AwesomeLog" target="_blank" rel="noopener">AwesomeLog</a>，如果能够帮到你，希望给个star，感谢</p>
-<p>参考文档:《Android开发高手课》、微信<a href="https://mp.weixin.qq.com/s/cnhuEodJGIbdodh0IxNeXQ" target="_blank" rel="noopener">xlog</a></p>
+<p>区别比较简单， App 插件来配置一个 Android App 工程，项目构建后输出一个 APK 安装包，Library 插件来配置一个 Android Library 工程，构建后输出 aar 包，Test 插件来配置一个 Android Test 工程。我们这里主要使用 App 插件和 Library 插件来实现组件的单独调试。这里就出现了第一个小问题，如何动态配置组件的工程类型？</p>
+<p>我们可以创建一个config.gradle文件，在里面定义一个项目全局变量isRelease，用于动态切换：组件化模式 / 集成化模式，然后根据该变量，使用不同的插件：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (isRelease) &#123;</span><br><span class="line">    apply <span class="string">plugin:</span> <span class="string">'com.android.library'</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    apply <span class="string">plugin:</span> <span class="string">'com.android.application'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-动态配置组件的-ApplicationId-和-AndroidManifest-文件"><a href="#2-动态配置组件的-ApplicationId-和-AndroidManifest-文件" class="headerlink" title="2. 动态配置组件的 ApplicationId 和 AndroidManifest 文件"></a>2. 动态配置组件的 ApplicationId 和 AndroidManifest 文件</h3><p>除了通过依赖的插件来配置不同的工程，我们还要根据 isRelease 的值来修改其他配置，一个 APP 是只有一个 ApplicationId 的，所以在单独调试和集成调试时组件的 ApplicationId 应该是不同的；一般来说一个 APP 也应该只有一个启动页， 在组件单独调试时也是需要有一个启动页，在集成调试时如果不处理启动页的问题，主工程和组件的 AndroidManifes 文件合并后就会出现两个启动页，这个问题也是需要解决的。</p>
+<p>ApplicationId 和 AndroidManifest 文件都是可以在 build.gradle 文件中进行配置的，所以我们同样通过动态配置组件工程类型时定义的 isRelease 这个全局变量的值来动态修改 ApplicationId 和 AndroidManifest。首先我们要新建一个 AndroidManifest.xml 文件，加上原有的 AndroidManifest 文件，在两个文件中就可以分别配置单独调试和集成调试时的不同的配置：</p>
+<p>其中 AndroidManifest 文件中的内容如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main/manifest/AndroidManifest.xml 单独调试</span></span><br><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;manifest xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">    <span class="keyword">package</span>=<span class="string">"com.example.login"</span>&gt;</span><br><span class="line"></span><br><span class="line">    &lt;application</span><br><span class="line">        android:allowBackup=<span class="string">"true"</span></span><br><span class="line">        android:icon=<span class="string">"@mipmap/ic_launcher"</span></span><br><span class="line">        android:label=<span class="string">"@string/app_name"</span></span><br><span class="line">        android:roundIcon=<span class="string">"@mipmap/ic_launcher_round"</span></span><br><span class="line">        android:supportsRtl=<span class="string">"true"</span></span><br><span class="line">        android:theme=<span class="string">"@style/AppTheme"</span>&gt;</span><br><span class="line">        &lt;activity android:name=<span class="string">".LoginActivity"</span>&gt;</span><br><span class="line">            &lt;intent-filter&gt;</span><br><span class="line">                &lt;action android:name=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span><br><span class="line"></span><br><span class="line">                &lt;category android:name=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span><br><span class="line">            &lt;/intent-filter&gt;</span><br><span class="line">        &lt;/activity&gt;</span><br><span class="line">    &lt;/application&gt;</span><br><span class="line"></span><br><span class="line">&lt;/manifest&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">// main/AndroidManifest.xml 集成调试</span></span><br><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;manifest xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span></span><br><span class="line">    <span class="keyword">package</span>=<span class="string">"com.example.login"</span>&gt;</span><br><span class="line"></span><br><span class="line">    &lt;application android:theme=<span class="string">"@style/AppTheme"</span>&gt;</span><br><span class="line">        &lt;activity android:name=<span class="string">".LoginActivity"</span>/&gt;</span><br><span class="line">    &lt;/application&gt;</span><br><span class="line"></span><br><span class="line">&lt;/manifest&gt;</span><br></pre></td></tr></table></figure>
+<p>然后在 build.gradle 中通过判断 isRelease 的值，来配置不同的 ApplicationId 和 AndroidManifest.xml 文件的路径</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// login 组件的 build.gradle</span></span><br><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        <span class="keyword">if</span> (!isRelease) &#123;</span><br><span class="line">            <span class="comment">// 单独调试时添加 applicationId ，集成调试时移除</span></span><br><span class="line">            applicationId <span class="string">"com.example.login"</span></span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    sourceSets &#123;</span><br><span class="line">        main &#123;</span><br><span class="line">            <span class="comment">// 单独调试与集成调试时使用不同的 AndroidManifest.xml 文件</span></span><br><span class="line">            <span class="keyword">if</span> (isRelease) &#123;</span><br><span class="line">              	manifest.srcFile <span class="string">'src/main/AndroidManifest.xml'</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                manifest.srcFile <span class="string">'src/main/manifest/AndroidManifest.xml'</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到这里我们就解决了组件化开发时遇到的第二个问题，实现了组件的单独调试与集成调试，并在不同情况时使用的不同配置。</p>
+<h2 id="三、模块间数据通信"><a href="#三、模块间数据通信" class="headerlink" title="三、模块间数据通信"></a>三、模块间数据通信</h2><h3 id="面向接口编程（不推荐）"><a href="#面向接口编程（不推荐）" class="headerlink" title="面向接口编程（不推荐）"></a>面向接口编程（不推荐）</h3><p>该方式是在组件中实现接口并将实现类设置到公共库中的service中，将公共接口下沉到公共库中，这样就可以通过调用公共库的service来实现跨模块通信，但是这样做的缺点是公共库会越来越臃肿，违背了组件化开发的初衷。</p>
+<h3 id="接口-路由"><a href="#接口-路由" class="headerlink" title="接口+路由"></a>接口+路由</h3><p>我们可以通过路由地址查找到接口的实现类，然后通过反射调用的方式我们就可以实现跨模块的通信了，对于这种实现方式ARouter的IProvider就已经实现。</p>
+<h4 id="如何对外暴露接口"><a href="#如何对外暴露接口" class="headerlink" title="如何对外暴露接口"></a>如何对外暴露接口</h4><p>解决了通信手段的问题，我们就得考虑另一个问题，为其他模块提供的<strong>接口+数据结构</strong> 我们应该放在哪里？下沉到公共模块吗？或者另外新建一个module用来维护这些接口+数据结构？但是这样一来，成本就有些大了，也不方便。</p>
+<p>在微信的模块化文章中提出了一个解决方法，将你要暴露的<strong>接口+数据结构</strong> 甚至其他想要暴露的文件都<strong>.api化</strong> ，即将你要暴露的文件的后缀名改为api，然后通过特定的方法将<strong>api</strong>后缀的文件拷贝出来，在module外部重新组成一个新的module（也可称为SDK），而想要使用的模块只需要调用这个SDK即可。当然，拷贝文件和组件SDK是完全自动化的，并非手工，这样才能节省成本。</p>
+<p>由于微信的模块化文章中没有涉及到<strong>.api化</strong>的具体实现，所以根据这种思路，我使用了其他方法来实现要达到的效果。具体思路如下：</p>
+<ol>
+<li>创建一个名为<strong>_exports</strong>的文件夹，需要对外暴露的文件都放在里面</li>
+<li>将_exports文件夹打包成jar</li>
+</ol>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 创建 jar 包</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">task makeExportJar(<span class="string">type:</span> Jar) &#123;</span><br><span class="line">    baseName = <span class="string">"hpauth-exports"</span></span><br><span class="line">    version = <span class="string">"1.0.0"</span></span><br><span class="line">    extension = <span class="string">"jar"</span></span><br><span class="line">    <span class="comment">// java文件编译后的所在位置</span></span><br><span class="line">    from(<span class="string">'build/intermediates/classes/debug/'</span>)</span><br><span class="line">    <span class="comment">// kotlin文件编译后的所在位置</span></span><br><span class="line">    from(<span class="string">'build/tmp/kotlin-classes/debug/'</span>)</span><br><span class="line">    include(<span class="string">'com/loong/login/_exports/**'</span>)</span><br><span class="line">    <span class="comment">// jar包导出路径</span></span><br><span class="line">    destinationDir = file(<span class="string">'build/_exports'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>将jar发布到远程Maven仓库，我这里做演示，只是发布到本地仓库</li>
+</ol>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">artifacts &#123;</span><br><span class="line">    archives makeExportJar</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">uploadArchives &#123;</span><br><span class="line">    repositories.mavenDeployer  &#123;</span><br><span class="line">            <span class="comment">// 本地的maven仓库路径</span></span><br><span class="line">            repository(<span class="string">url:</span> uri(<span class="string">"../repo"</span>))</span><br><span class="line">            pom.project &#123;</span><br><span class="line">                groupId <span class="string">'com.loong.login'</span></span><br><span class="line">                artifactId <span class="string">'auth-exports'</span></span><br><span class="line">                version <span class="string">'1.0.0'</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>在需要的模块调用jar</li>
+</ol>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!isRelease) &#123;</span><br><span class="line">    implementation <span class="string">'com.loong.login:auth-exports:1.0.0'</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    compileOnly <span class="string">'com.loong.login:auth-exports:1.0.0'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里需要注意的是：在集成调试的时候，需要使用compileOnly，只在编译期依赖jar包，运行时不需要，否则会报错。</p>
+<h2 id="四、模块间页面跳转"><a href="#四、模块间页面跳转" class="headerlink" title="四、模块间页面跳转"></a>四、模块间页面跳转</h2><p>模块间的页面跳转，直接使用ARouter就能实现，使用比较简单，读者可以自行搜索，当然我们也可以根据项目不同的需求，站在巨人的肩膀上，自己动手实现一个更加精简高效的路由框架，这样我们才能对路由框架有一个更清楚的认识。</p>
+<h2 id="五、模块间代码和资源的相互隔离"><a href="#五、模块间代码和资源的相互隔离" class="headerlink" title="五、模块间代码和资源的相互隔离"></a>五、模块间代码和资源的相互隔离</h2><h4 id="代码隔离"><a href="#代码隔离" class="headerlink" title="代码隔离"></a>代码隔离</h4><p>我们希望的组件依赖是只有在打包过程中才能直接引用组件中的类，在开发阶段，所有组件中的类我们都是不可以访问的。只有实现了这个目标，才能从根本上杜绝开发过程中直接引用组件中类的问题。这个问题我们可以通过 Gradle 提供的方式来解决，Gradle 3.0 提供了新的依赖方式 runtimeOnly ，通过 runtimeOnly 方式依赖时，依赖项仅在运行时对模块及其消费者可用，编译期间依赖项的代码对其消费者时完全隔离的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 主项目的 build.gradle</span></span><br><span class="line">dependencies &#123;</span><br><span class="line">    <span class="comment">// 其他依赖 ...</span></span><br><span class="line">    <span class="function">runtimeOnly <span class="title">project</span><span class="params">(<span class="string">':login'</span>)</span></span></span><br><span class="line"><span class="function">    runtimeOnly <span class="title">project</span><span class="params">(<span class="string">':share'</span>)</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+<h4 id="资源隔离"><a href="#资源隔离" class="headerlink" title="资源隔离"></a>资源隔离</h4><p>我们可以在每个组件的 build.gradle 中添加 resourcePrefix 配置来固定这个组件中的资源前缀。不过 resourcePrefix 配置只能限定 res 中 xml 文件中定义的资源，并不能限定图片资源，所以我们在往组件中添加图片资源时要手动限制资源前缀。并将多个组件中都会用到的资源放入 Base 模块中。这样我们就可以在最大限度上实现组件间资源的隔离。</p>
+<h2 id="六、组件Application的动态配置"><a href="#六、组件Application的动态配置" class="headerlink" title="六、组件Application的动态配置"></a>六、组件Application的动态配置</h2><p>在使用组件化开发后，业务模块的Application就会被宿主的Application所替换，如果某些模块中需要做一些初始化的操作，只能强引用到宿主的Application中，那么有什么办法可以降低解耦呢？ARouter的IProvider的方式显然可以满足Application的解耦，并且这种方式还可以支持我们可以在不同的时机去做子模块的初始化，也就是可以实现子模块的懒加载，这样我们也可以提高启动速度。</p>
 
       
 
@@ -257,7 +282,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">mmap</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">组件化</a>
         		</li>
       		
 		</ul>
@@ -273,7 +298,7 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="/categories/Android/日志//" class="article-tag-list-link color3">日志</a>
+        			<a href="/categories/Android/组件化//" class="article-tag-list-link color4">组件化</a>
         		</li>
       		
 		</ul>
@@ -328,7 +353,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2019/08/18/2019-08-18-Android高性能日志写入方案-mmap/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=https://jesse505.github.io/2019/04/22/2019-04-22-Understand-Component/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -342,8 +367,17 @@
   
 <nav id="article-nav">
   
+    <a href="/2019/05/02/2019-05-02-动手撸一个路由框架/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          动手撸一个路由框架
+        
+      </div>
+    </a>
   
-    <a href="/2019/06/28/2019-06-28-Android-Retrofit/" id="article-nav-older" class="article-nav-link-wrap">
+  
+    <a href="/2019/02/28/2019-02-28-Android-Retrofit/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Retrofit源码解析</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -371,7 +405,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常规方案的缺陷"><span class="toc-number">2.</span> <span class="toc-text">常规方案的缺陷</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是mmap"><span class="toc-number">3.</span> <span class="toc-text">什么是mmap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mmap使用场景"><span class="toc-number">4.</span> <span class="toc-text">mmap使用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实现"><span class="toc-number">5.</span> <span class="toc-text">具体实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#组件化开发需要解决的问题"><span class="toc-number">2.</span> <span class="toc-text">组件化开发需要解决的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一、拆分项目"><span class="toc-number">3.</span> <span class="toc-text">一、拆分项目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、组件单独调试"><span class="toc-number">4.</span> <span class="toc-text">二、组件单独调试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-动态配置组件的工程类型"><span class="toc-number">4.1.</span> <span class="toc-text">1. 动态配置组件的工程类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-动态配置组件的-ApplicationId-和-AndroidManifest-文件"><span class="toc-number">4.2.</span> <span class="toc-text">2. 动态配置组件的 ApplicationId 和 AndroidManifest 文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、模块间数据通信"><span class="toc-number">5.</span> <span class="toc-text">三、模块间数据通信</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#面向接口编程（不推荐）"><span class="toc-number">5.1.</span> <span class="toc-text">面向接口编程（不推荐）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口-路由"><span class="toc-number">5.2.</span> <span class="toc-text">接口+路由</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#如何对外暴露接口"><span class="toc-number">5.2.1.</span> <span class="toc-text">如何对外暴露接口</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、模块间页面跳转"><span class="toc-number">6.</span> <span class="toc-text">四、模块间页面跳转</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五、模块间代码和资源的相互隔离"><span class="toc-number">7.</span> <span class="toc-text">五、模块间代码和资源的相互隔离</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#代码隔离"><span class="toc-number">7.0.1.</span> <span class="toc-text">代码隔离</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#资源隔离"><span class="toc-number">7.0.2.</span> <span class="toc-text">资源隔离</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六、组件Application的动态配置"><span class="toc-number">8.</span> <span class="toc-text">六、组件Application的动态配置</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -503,15 +537,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">反射</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -527,6 +561,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LRU</a>
               </li>
              
@@ -535,11 +577,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+                <a href="javascript:void(0)" class="js-tag color5">路由框架</a>
               </li>
              
               <li class="article-tag-list-item">

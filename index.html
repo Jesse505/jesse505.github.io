@@ -54,7 +54,7 @@
 		  <h1 class="header-author"><a href="/">赵一飞</a></h1>
 		</hgroup>
 		
-		<p class="header-subtitle">不给人生留遗憾</p>
+		<p class="header-subtitle">积累，不可或缺，开放</p>
 		
 
 		<nav class="header-menu">
@@ -112,7 +112,7 @@
 			  <h1 class="header-author js-header-author">赵一飞</h1>
 			</hgroup>
 			
-			<p class="header-subtitle"><i class="icon icon-quo-left"></i>不给人生留遗憾<i class="icon icon-quo-right"></i></p>
+			<p class="header-subtitle"><i class="icon icon-quo-left"></i>积累，不可或缺，开放<i class="icon icon-quo-right"></i></p>
 			
 			
 			
@@ -159,20 +159,20 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-2019-08-18-Android高性能日志写入方案-mmap" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-2019-10-18-Android高性能日志写入方案-mmap" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/18/2019-08-18-Android高性能日志写入方案-mmap/">Android高性能日志写入方案-mmap</a>
+      <a class="article-title" href="/2019/10/18/2019-10-18-Android高性能日志写入方案-mmap/">Android高性能日志写入方案-mmap</a>
     </h1>
   
 
         
-        <a href="/2019/08/18/2019-08-18-Android高性能日志写入方案-mmap/" class="archive-article-date">
-  	<time datetime="2019-08-18T14:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-18</time>
+        <a href="/2019/10/18/2019-10-18-Android高性能日志写入方案-mmap/" class="archive-article-date">
+  	<time datetime="2019-10-18T14:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-18</time>
 </a>
         
       </header>
@@ -186,7 +186,7 @@
 </ul>
 <p>看到这里，难道真的就没有高性能又能保证日志完整性的方案了吗？答案是mmap。mmap是个什么鬼？我们接着往下看。</p>
         
-          <a class="article-more-a" href="/2019/08/18/2019-08-18-Android高性能日志写入方案-mmap/#more">more >></a>
+          <a class="article-more-a" href="/2019/10/18/2019-10-18-Android高性能日志写入方案-mmap/#more">more >></a>
         
       
 
@@ -225,7 +225,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/18/2019-08-18-Android高性能日志写入方案-mmap/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/10/18/2019-10-18-Android高性能日志写入方案-mmap/">展开全文 >></a>
         </p>
       
 
@@ -255,20 +255,233 @@
 
 
   
-    <article id="post-2019-06-28-Android-Retrofit" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-2019-05-02-动手撸一个路由框架" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/28/2019-06-28-Android-Retrofit/">Retrofit源码解析</a>
+      <a class="article-title" href="/2019/05/02/2019-05-02-动手撸一个路由框架/">动手撸一个路由框架</a>
     </h1>
   
 
         
-        <a href="/2019/06/28/2019-06-28-Android-Retrofit/" class="archive-article-date">
-  	<time datetime="2019-06-28T15:17:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-28</time>
+        <a href="/2019/05/02/2019-05-02-动手撸一个路由框架/" class="archive-article-date">
+  	<time datetime="2019-05-02T14:34:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在对项目大刀阔斧的组件化改造，路由框架将是组件化开发中必不可少的，阿里的Arouter诚然是一个非常优秀的路由框架，但是Arouter确实也存在一些问题，比如初始化的时候会去扫描私有的dex，还有缓存机制，作为一个有追求的程序员，我们今天就来借鉴阿里Arouter的思想自己动手实现一个路由框架AwesomeRouter。我将从以下几个方面展开：</p>
+<ul>
+<li>使用和原理</li>
+<li>框架的整体架构</li>
+<li>注解处理器APT处理自定义注解</li>
+<li>优雅的生成路由Group类—JavaPoet的使用</li>
+<li>Activity的跳转实现</li>
+<li>接口化通信IProvider的实现</li>
+</ul>
+<h2 id="使用和原理"><a href="#使用和原理" class="headerlink" title="使用和原理"></a>使用和原理</h2><p>首先我们先来看看如何使用和其中的原理</p>
+<h4 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义注解，并设置path的值</span></span><br><span class="line"><span class="meta">@Router</span>(path = <span class="string">"/user/LoginActivity"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line">			...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//通过path地址跳转</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">jumpLogin</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">    AwesomeRouter.getInstance().build(<span class="string">"/user/LoginActivity"</span>)</span><br><span class="line">           .navigation(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到用法基本和ARouter一样，接着我们看实现原理</p>
+<h4 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h4><p>路由框架会在项目的编译期间扫描所有添加@Router注解的Activity类，然后将Router注解中的path地址和Activity.class文件一一对应保存在map中，我们直接看apt生成的路由Group类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AwesomeRouter</span>$$<span class="title">Group</span>$$<span class="title">user</span> <span class="keyword">implements</span> <span class="title">IRouteGroup</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Map&lt;String, RouteMeta&gt; <span class="title">loadPath</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Map&lt;String, RouteMeta&gt; pathMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    pathMap.put(<span class="string">"/user/LoginActivity"</span>, RouteMeta.build(RouteMeta.Type.ACTIVITY, LoginActivity.class, <span class="string">"/user/LoginActivity"</span>, <span class="string">"user"</span>));</span><br><span class="line">    <span class="keyword">return</span> pathMap;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RouteMeta就是路由表的封装类，里面包含了<strong>路由的类型（包括Activity，Provider）, 路由组地址，路由地址，目标class文件</strong>。可以看到路由地址和路由表的映射map就是在<code>AwesomeRouter$$Group$$user</code>里面保存着，我们在跳转的时候就可以通过传入的路由地址的组地址，通过Class.forName方式找到<code>AwesomeRouter$$Group$$user</code>class文件，并通过newInstance的方式得到该类的对象，再调用loadPath方法就能拿到map，然后再根据路由地址得到目标class文件，这样就能完成一次Activity跳转了，这个其实就是路由框架的核心逻辑所在。</p>
+        
+          <a class="article-more-a" href="/2019/05/02/2019-05-02-动手撸一个路由框架/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">路由框架</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android/组件化//" class="article-tag-list-link color4">组件化</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/05/02/2019-05-02-动手撸一个路由框架/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-2019-04-22-Understand-Component" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/22/2019-04-22-Understand-Component/">Android模块化/组件化实践</a>
+    </h1>
+  
+
+        
+        <a href="/2019/04/22/2019-04-22-Understand-Component/" class="archive-article-date">
+  	<time datetime="2019-04-22T14:01:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在项目的开发过程中，随着开发人员的增多及功能的增加，代码会越来臃肿，功能间代码耦合也会越来越严重，项目编译的时间也会很长，为了解决以上问题，模块化/组件化就应运而生了。这篇文章我就结合自己在项目中的组件化重构之路来总结下模块化需要解决的问题？以及如何解决？</p>
+<h2 id="组件化开发需要解决的问题"><a href="#组件化开发需要解决的问题" class="headerlink" title="组件化开发需要解决的问题"></a>组件化开发需要解决的问题</h2><p>在实现组件化的过程中，同一个问题可能有不同的技术路径可以解决，但是需要解决的问题主要有以下几点：</p>
+<ul>
+<li>如何拆分项目</li>
+<li>如何满足单个业务模块的单独运行及调试的需求</li>
+<li>如何满足模块间的数据通信</li>
+<li>如何满足模块间的页面跳转</li>
+<li>如何真正实现解耦，降低开发人员的失误，真正实现模块间代码和资源的相互隔离</li>
+<li>如何实现组件Application的动态配置</li>
+</ul>
+<p>以上就是实现组件化的过程中我们要解决的主要问题，下面我们会一个一个来解决，最终实现比较合理的组件化开发。</p>
+<h2 id="一、拆分项目"><a href="#一、拆分项目" class="headerlink" title="一、拆分项目"></a>一、拆分项目</h2><p>以下分层是我在项目中的分层实践，仅供参考:</p>
+<ul>
+<li><strong>宿主层</strong>：App壳，负责集成业务模块</li>
+<li><strong>业务模块</strong>：将项目的每个大功能模块拆分成一个个单独的moudle</li>
+<li><strong>业务组件：</strong>业务模块中的公共业务组件，比如进度查询，资料填写，以及人脸识别和OCR组件。</li>
+<li><strong>底层SDK</strong>：各个业务线沉淀的一些公共组件，比如网络，图片，日志，风控，崩溃，UI</li>
+</ul>
+        
+          <a class="article-more-a" href="/2019/04/22/2019-04-22-Understand-Component/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">组件化</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Android/组件化//" class="article-tag-list-link color4">组件化</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/04/22/2019-04-22-Understand-Component/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-2019-02-28-Android-Retrofit" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/28/2019-02-28-Android-Retrofit/">Retrofit源码解析</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/28/2019-02-28-Android-Retrofit/" class="archive-article-date">
+  	<time datetime="2019-02-28T15:17:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-28</time>
 </a>
         
       </header>
@@ -290,7 +503,7 @@
 <p><strong>4、调用接口实例的方法，生成Call对象，执行请求</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Call&lt;List&lt;Repo&gt;&gt; repos = service.listRepos(<span class="string">"websocket"</span>);</span><br><span class="line">repos.execute() or repos.enqueue()</span><br></pre></td></tr></table></figure>
         
-          <a class="article-more-a" href="/2019/06/28/2019-06-28-Android-Retrofit/#more">more >></a>
+          <a class="article-more-a" href="/2019/02/28/2019-02-28-Android-Retrofit/#more">more >></a>
         
       
 
@@ -329,7 +542,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/28/2019-06-28-Android-Retrofit/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/02/28/2019-02-28-Android-Retrofit/">展开全文 >></a>
         </p>
       
 
@@ -654,99 +867,6 @@
 
 
   
-    <article id="post-2018-10-02-Understand-Component-part1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/02/2018-10-02-Understand-Component-part1/">Android组件化最佳实践</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/02/2018-10-02-Understand-Component-part1/" class="archive-article-date">
-  	<time datetime="2018-10-02T14:01:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在项目的开发过程中，随着开发人员的增多及功能的增加，如果提前没有使用合理的开发架构，那么代码会越来臃肿，功能间代码耦合也会越来越严重，这时候为了保证项目代码的质量，我们就必须进行重构。</p>
-<p>比较简单的开发架构是按照功能模块进行拆分，也就是用 Android 开发中的 module 这个概念，每个功能都是一个 module，每个功能的代码都在自己所属的 module 中添加。这样的设计在各个功能相互直接比较独立的情况下是比较合理的，但是当多个模块中涉及到相同功能时代码的耦合又会增加。</p>
-<p>例如首页模块和直播间模块中都可能涉及到了视频播放的功能，这时候不管将播放控制的代码放到首页还是直播间，开发过程中都会发现，我们想要解决的代码耦合情况又又又又出现了。为了进一步解决这个问题，组件化的开发模式顺势而来。</p>
-        
-          <a class="article-more-a" href="/2018/10/02/2018-10-02-Understand-Component-part1/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">组件化</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android//" class="article-tag-list-link color3">Android</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Android/组件化//" class="article-tag-list-link color4">组件化</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/02/2018-10-02-Understand-Component-part1/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-2018-09-12-Understand-websocket-01" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1040,116 +1160,6 @@
 
 
   
-    <article id="post-2018-06-01-Java-Collection-HashMap" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/01/2018-06-01-Java-Collection-HashMap/">HashMap原理解析</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/01/2018-06-01-Java-Collection-HashMap/" class="archive-article-date">
-  	<time datetime="2018-06-01T14:11:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><p>从本文你可以学习到：</p>
-<blockquote>
-<ol>
-<li>你知道HashMap的工作原理吗？</li>
-<li>你知道get和put的原理吗？equals()和hashCode()的都有什么作用？</li>
-<li>你知道hash的实现吗？为什么要这样实现？</li>
-<li>如果HashMap的大小超过了负载因子(load factor)定义的容量，怎么办？</li>
-</ol>
-</blockquote>
-<p>几个关键的信息：<strong>基于Map接口实现、允许null键/值、非同步、不保证有序(比如插入的顺序)、也不保证序不随时间变化</strong>。</p>
-<h2 id="二、两个重要的参数"><a href="#二、两个重要的参数" class="headerlink" title="二、两个重要的参数"></a>二、两个重要的参数</h2><p>在HashMap中有两个很重要的参数，容量(Capacity)和负载因子(Load factor)<br>简单的说，Capacity就是bucket的大小，Load factor就是bucket填满程度的最大比例。如果对迭代性能要求很高的话，不要把<code>capacity</code>设置过大，也不要把<code>load factor</code>设置过小。当bucket中的entries的数目大于<code>capacity*load factor</code>时就需要调整bucket的大小为当前的2倍。</p>
-<p><strong>Capacity默认值是16，Load factor默认值是0.75f</strong></p>
-<h2 id="三、put函数的实现"><a href="#三、put函数的实现" class="headerlink" title="三、put函数的实现"></a>三、put函数的实现</h2><p>put函数大致的思路为：</p>
-<ol>
-<li>对key的hashCode()做hash，然后再计算index;</li>
-<li>如果没碰撞直接放到bucket里；</li>
-<li>如果碰撞了，以链表的形式存在buckets后；</li>
-<li>如果碰撞导致链表过长(大于等于<code>TREEIFY_THRESHOLD</code>)，就把链表转换成红黑树；</li>
-<li>如果节点已经存在就替换old value(保证key的唯一性)</li>
-<li>如果bucket满了(超过<code>load factor*current capacity</code>)，就要resize。
-        
-          <a class="article-more-a" href="/2018/06/01/2018-06-01-Java-Collection-HashMap/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Java集合</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Java//" class="article-tag-list-link color5">Java</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Java/集合//" class="article-tag-list-link color3">集合</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/01/2018-06-01-Java-Collection-HashMap/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1267,15 +1277,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">开源框架</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">反射</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1291,6 +1301,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LRU</a>
               </li>
              
@@ -1299,11 +1317,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">View绘制</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Binder</a>
+                <a href="javascript:void(0)" class="js-tag color5">路由框架</a>
               </li>
              
               <li class="article-tag-list-item">

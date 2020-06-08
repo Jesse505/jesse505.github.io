@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://jesse505.github.io/2019/08/18/2019-08-18-Android%E9%AB%98%E6%80%A7%E8%83%BD%E6%97%A5%E5%BF%97%E5%86%99%E5%85%A5%E6%96%B9%E6%A1%88-mmap/</loc>
-    <lastmod>2020-04-08</lastmod>
+    <loc>https://jesse505.github.io/2019/04/22/2019-04-22-Understand-Component/</loc>
+    <lastmod>2020-06-08</lastmod>
+  </url>  <url>
+    <loc>https://jesse505.github.io/2019/05/02/2019-05-02-%E5%8A%A8%E6%89%8B%E6%92%B8%E4%B8%80%E4%B8%AA%E8%B7%AF%E7%94%B1%E6%A1%86%E6%9E%B6/</loc>
+    <lastmod>2020-06-08</lastmod>
+  </url>  <url>
+    <loc>https://jesse505.github.io/2019/10/18/2019-10-18-Android%E9%AB%98%E6%80%A7%E8%83%BD%E6%97%A5%E5%BF%97%E5%86%99%E5%85%A5%E6%96%B9%E6%A1%88-mmap/</loc>
+    <lastmod>2020-06-08</lastmod>
+  </url>  <url>
+    <loc>https://jesse505.github.io/2019/02/28/2019-02-28-Android-Retrofit/</loc>
+    <lastmod>2020-06-08</lastmod>
   </url>  <url>
     <loc>https://jesse505.github.io/2019/01/01/2019-01-01-Android-LruCache/</loc>
     <lastmod>2019-11-06</lastmod>
-  </url>  <url>
-    <loc>https://jesse505.github.io/2019/06/28/2019-06-28-Android-Retrofit/</loc>
-    <lastmod>2019-11-04</lastmod>
   </url>  <url>
     <loc>https://jesse505.github.io/2018/02/08/2018-02-08-Understand-OkHttp/</loc>
     <lastmod>2019-11-03</lastmod>
@@ -51,9 +57,6 @@
   </url>  <url>
     <loc>https://jesse505.github.io/2018/03/04/2018-03-04-Java-reflect-01/</loc>
     <lastmod>2019-02-27</lastmod>
-  </url>  <url>
-    <loc>https://jesse505.github.io/2018/10/02/2018-10-02-Understand-Component-part1/</loc>
-    <lastmod>2019-01-25</lastmod>
   </url>  <url>
     <loc>https://jesse505.github.io/2017/01/05/2017-01-05-arith-sort-part1/</loc>
     <lastmod>2019-01-21</lastmod>
